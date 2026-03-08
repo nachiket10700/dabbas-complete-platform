@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Settings - Dabba's Provider</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/frontend/assets/css/style.css">
+    <link rel="stylesheet" href="/frontend/assets/css/provider.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .business-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.closed {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .business-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .business-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .business-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .business-type {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .verification-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: #4caf50;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .subscription-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background: #d4edda;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        /* Pricing Cards */
+        .pricing-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: #ff6b6b;
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.popular::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d2d2d;
+        }
+
+        .plan-duration {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-input-group .currency {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .price-input-group input {
+            width: 120px;
+            padding: 0.5rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .price-input-group span {
+            color: #666;
+        }
+
+        .discount-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Complementary Section */
+        .complementary-section {
+            background: #fff9e6;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #ffc107;
+        }
+
+        .complementary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .complementary-header h3 {
+            color: #856404;
+        }
+
+        .complementary-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .complementary-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid #ffe58f;
+        }
+
+        .complementary-item input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .complementary-item input:focus {
+            border-color: #ffc107;
+        }
+
+        .complementary-item .item-price {
+            width: 100px;
+            text-align: right;
+        }
+
+        .complementary-item button {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-add-complementary {
+            background: #ffc107;
+            color: #856404;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add-complementary:hover {
+            background: #ffb300;
+        }
+
+        /* Subscription Menu */
+        .menu-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .day-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .day-tab {
+            padding: 0.8rem 1.5rem;
+            background: #f5f5f5;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .day-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .day-tab:hover {
+            border-color: #ff6b6b;
+        }
+
+        .meal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .meal-card {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid #f0f0f0;
+        }
+
+        .meal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ffeae4;
+        }
+
+        .meal-header i {
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .meal-header h3 {
+            color: #ff6b6b;
+        }
+
+        .meal-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .meal-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .meal-item .item-name {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .meal-item .item-price {
+            color: #ff6b6b;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .meal-item .edit-item {
+            color: #2196f3;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .meal-item:hover .edit-item {
+            opacity: 1;
+        }
+
+        .btn-add-meal-item {
+            width: 100%;
+            padding: 0.8rem;
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            border-radius: 8px;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-meal-item:hover {
+            background: #ffeae4;
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* Subscription Benefits */
+        .benefits-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fc;
+            border-radius: 10px;
+        }
+
+        .benefit-item i {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+        }
+
+        .benefit-item input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+        }
+
+        /* Save Button */
+        .btn-save {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/frontend/index.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="business-status" id="businessStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Open</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userInitials">SK</div>
+                <span id="userName">Spice Kitchen</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="business-card">
+            <div class="business-logo">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <h3 class="business-name" id="businessName">Spice Kitchen</h3>
+            <p class="business-type" id="businessCuisine">North Indian, Mughlai</p>
+            <span class="verification-badge" id="verificationBadge">
+                <i class="fas fa-check-circle"></i> Verified
+            </span>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="daily-menu.html" class="nav-link">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Daily Menu</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subscription-settings.html" class="nav-link active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Subscriptions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="earnings.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="complaints.html" class="nav-link">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Complaints</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="subscription-container">
+            <div class="page-header">
+                <h1>Subscription Management</h1>
+                <span class="status-badge">
+                    <i class="fas fa-check-circle"></i> Active Plans
+                </span>
+            </div>
+
+            <!-- Pricing Section -->
+            <div class="pricing-section">
+                <div class="section-title">
+                    <i class="fas fa-tag"></i>
+                    <h2>Subscription Pricing</h2>
+                </div>
+                
+                <div class="pricing-grid">
+                    <!-- Weekly Plan -->
+                    <div class="pricing-card popular">
+                        <h3 class="plan-name">Weekly Plan</h3>
+                        <p class="plan-duration">7 Days • 14 Meals</p>
+                        <div class="price-input-group">
+                            <span class="currency">₹</span>
+                            <input type="number" id="weeklyPrice" value="599" min="0" step="10">
+                            <span>/week</span>
+                            <span class="discount-badge">Save 15%</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <label>Per Meal Price: <span id="weeklyPerMeal">₹42.8</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Plan -->
+                    <div class="pricing-card">
+                        <h3 class="plan-name">Monthly Plan</h3>
+                        <p class="plan-duration">30 Days • 60 Meals</p>
+                        <div class="price-input-group">
+                            <span class="currency">₹</span>
+                            <input type="number" id="monthlyPrice" value="1999" min="0" step="10">
+                            <span>/month</span>
+                            <span class="discount-badge">Save 33%</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <label>Per Meal Price: <span id="monthlyPerMeal">₹33.3</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complementary Items for Subscribers -->
+            <div class="complementary-section">
+                <div class="complementary-header">
+                    <h3><i class="fas fa-gift"></i> Complementary Items (Free for Subscribers)</h3>
+                    <span class="badge" style="background: #ffc107; color: #856404; padding: 0.3rem 1rem; border-radius: 50px;">Free with subscription</span>
+                </div>
+                
+                <div class="complementary-items" id="complementaryItems">
+                    <!-- Complementary items will be loaded here -->
+                </div>
+                
+                <button class="btn-add-complementary" onclick="addComplementaryItem()">
+                    <i class="fas fa-plus"></i> Add Complementary Item
+                </button>
+            </div>
+
+            <!-- Subscription Menu -->
+            <div class="menu-section">
+                <div class="section-title">
+                    <i class="fas fa-utensils"></i>
+                    <h2>Subscription Menu</h2>
+                </div>
+
+                <!-- Day Selector -->
+                <div class="day-tabs">
+                    <span class="day-tab active" onclick="selectDay('monday')">Monday</span>
+                    <span class="day-tab" onclick="selectDay('tuesday')">Tuesday</span>
+                    <span class="day-tab" onclick="selectDay('wednesday')">Wednesday</span>
+                    <span class="day-tab" onclick="selectDay('thursday')">Thursday</span>
+                    <span class="day-tab" onclick="selectDay('friday')">Friday</span>
+                    <span class="day-tab" onclick="selectDay('saturday')">Saturday</span>
+                    <span class="day-tab" onclick="selectDay('sunday')">Sunday</span>
+                </div>
+
+                <!-- Meals Grid -->
+                <div class="meal-grid">
+                    <!-- Lunch -->
+                    <div class="meal-card">
+                        <div class="meal-header">
+                            <i class="fas fa-sun"></i>
+                            <h3>Lunch Menu</h3>
+                        </div>
+                        <div class="meal-items" id="lunchItems">
+                            <!-- Lunch items will be loaded here -->
+                        </div>
+                        <button class="btn-add-meal-item" onclick="addMealItem('lunch')">
+                            <i class="fas fa-plus"></i> Add to Lunch
+                        </button>
+                    </div>
+
+                    <!-- Dinner -->
+                    <div class="meal-card">
+                        <div class="meal-header">
+                            <i class="fas fa-moon"></i>
+                            <h3>Dinner Menu</h3>
+                        </div>
+                        <div class="meal-items" id="dinnerItems">
+                            <!-- Dinner items will be loaded here -->
+                        </div>
+                        <button class="btn-add-meal-item" onclick="addMealItem('dinner')">
+                            <i class="fas fa-plus"></i> Add to Dinner
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Special Notes -->
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fc; border-radius: 10px;">
+                    <label>Special Notes for Subscribers</label>
+                    <textarea id="subscriptionNotes" rows="3" placeholder="e.g., Menu repeats weekly, Special Sunday thali, etc." style="width: 100%; padding: 0.8rem; border: 2px solid #f0f0f0; border-radius: 8px; margin-top: 0.5rem;"></textarea>
+                </div>
+            </div>
+
+            <!-- Subscription Benefits -->
+            <div class="benefits-section">
+                <div class="section-title">
+                    <i class="fas fa-star"></i>
+                    <h2>Subscription Benefits</h2>
+                </div>
+                
+                <div class="benefits-grid" id="benefitsGrid">
+                    <div class="benefit-item">
+                        <i class="fas fa-truck"></i>
+                        <input type="text" value="Free Delivery" placeholder="Benefit">
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-clock"></i>
+                        <input type="text" value="Priority Delivery" placeholder="Benefit">
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-gift"></i>
+                        <input type="text" value="Free Complementary Items" placeholder="Benefit">
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-headset"></i>
+                        <input type="text" value="Priority Support" placeholder="Benefit">
+                    </div>
+                </div>
+                <button class="btn-add-complementary" onclick="addBenefit()" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Add Benefit
+                </button>
+            </div>
+
+            <!-- Save Button -->
+            <button class="btn-save" onclick="saveSubscriptionSettings()">
+                <i class="fas fa-save"></i> Save Subscription Settings
+            </button>
+        </div>
+    </main>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Menu Item</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>Item Type</label>
+                <select id="modalItemType" style="width: 100%; padding: 0.8rem; border: 2px solid #f0f0f0; border-radius: 8px;">
+                    <option value="chapati">Chapati / Roti</option>
+                    <option value="rice">Rice</option>
+                    <option value="dal">Dal</option>
+                    <option value="sabji">Sabji</option>
+                    <option value="raita">Raita / Salad</option>
+                    <option value="papad">Papad</option>
+                    <option value="pickle">Pickle</option>
+                    <option value="dessert">Dessert</option>
+                    <option value="other">Other (Custom)</option>
+                </select>
+            </div>
+            
+            <div id="customTypeField" style="display: none; margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Custom Type</label>
+                    <input type="text" id="modalCustomType" placeholder="e.g., Thecha, Chutney" style="width: 100%; padding: 0.8rem; border: 2px solid #f0f0f0; border-radius: 8px;">
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Item Name</label>
+                <input type="text" id="modalItemName" placeholder="e.g., Butter Chicken" style="width: 100%; padding: 0.8rem; border: 2px solid #f0f0f0; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Price (₹)</label>
+                <input type="number" id="modalItemPrice" value="0" min="0" style="width: 100%; padding: 0.8rem; border: 2px solid #f0f0f0; border-radius: 8px;">
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeModal()" style="flex: 1; padding: 0.8rem; background: #f0f0f0; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+                <button onclick="saveModalItem()" style="flex: 1; padding: 0.8rem; background: linear-gradient(135deg, #ff6b6b, #ff8e8e); color: white; border: none; border-radius: 8px; cursor: pointer;">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'Spice Kitchen';
+
+        document.getElementById('userName').textContent = username;
+        document.getElementById('businessName').textContent = username;
+        const initials = username.split(' ').map(n => n[0]).join('').substring(0, 2);
+        document.getElementById('userInitials').textContent = initials;
+
+        // Business status toggle
+        let isOpen = true;
+        document.getElementById('businessStatus').addEventListener('click', function() {
+            isOpen = !isOpen;
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            dot.classList.toggle('closed', !isOpen);
+            text.textContent = isOpen ? 'Open' : 'Closed';
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/frontend/index.html';
+        });
+
+        // ============== SUBSCRIPTION DATA ==============
+        let subscriptionData = {
+            weeklyPrice: 599,
+            monthlyPrice: 1999,
+            complementary: ['Fresh Salad', 'Boondi Raita', 'Masala Papad', 'Mixed Pickle'],
+            menu: {
+                monday: {
+                    lunch: ['Dal Tadka', 'Jeera Rice', 'Mix Veg', 'Chapati'],
+                    dinner: ['Dal Fry', 'Veg Kolhapuri', 'Rice', 'Chapati']
+                },
+                tuesday: {
+                    lunch: ['Chole', 'Puri', 'Rice', 'Salad'],
+                    dinner: ['Dal Makhani', 'Paneer Butter Masala', 'Rice', 'Naan']
+                },
+                wednesday: {
+                    lunch: ['Rajma', 'Rice', 'Roti', 'Onion Salad'],
+                    dinner: ['Kadhi', 'Bhindi Masala', 'Rice', 'Roti']
+                },
+                thursday: {
+                    lunch: ['Dal Dhokli', 'Rice', 'Papad'],
+                    dinner: ['Veg Biryani', 'Raita', 'Roti']
+                },
+                friday: {
+                    lunch: ['Sambhar', 'Rice', 'Medu Vada'],
+                    dinner: ['Paneer Tikka', 'Dal', 'Rice', 'Naan']
+                },
+                saturday: {
+                    lunch: ['Chana Masala', 'Bhatura', 'Rice'],
+                    dinner: ['Special Thali', 'Gulab Jamun']
+                },
+                sunday: {
+                    lunch: ['Puran Poli', 'Dal', 'Rice'],
+                    dinner: ['Veg Kolhapuri', 'Chapati', 'Rice']
+                }
+            },
+            benefits: ['Free Delivery', 'Priority Delivery', 'Free Complementary Items', 'Priority Support'],
+            notes: ''
+        };
+
+        let currentDay = 'monday';
+        let currentMealType = 'lunch';
+
+        // Initialize page
+        function initPage() {
+            document.getElementById('weeklyPrice').value = subscriptionData.weeklyPrice;
+            document.getElementById('monthlyPrice').value = subscriptionData.monthlyPrice;
+            document.getElementById('subscriptionNotes').value = subscriptionData.notes;
+            
+            updatePerMealPrices();
+            renderComplementaryItems();
+            renderBenefits();
+            renderMealItems();
+        }
+
+        // Update per meal prices
+        function updatePerMealPrices() {
+            const weekly = parseInt(document.getElementById('weeklyPrice').value) || 599;
+            const monthly = parseInt(document.getElementById('monthlyPrice').value) || 1999;
+            
+            document.getElementById('weeklyPerMeal').textContent = '₹' + (weekly / 14).toFixed(1);
+            document.getElementById('monthlyPerMeal').textContent = '₹' + (monthly / 60).toFixed(1);
+        }
+
+        document.getElementById('weeklyPrice').addEventListener('input', updatePerMealPrices);
+        document.getElementById('monthlyPrice').addEventListener('input', updatePerMealPrices);
+
+        // Complementary items
+        function renderComplementaryItems() {
+            const container = document.querySelector('.complementary-items');
+            container.innerHTML = subscriptionData.complementary.map((item, index) => `
+                <div class="complementary-item">
+                    <input type="text" value="${item}" placeholder="e.g., Salad" 
+                           onchange="updateComplementary(${index}, this.value)">
+                    <button onclick="removeComplementary(${index})"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addComplementaryItem() {
+            subscriptionData.complementary.push('');
+            renderComplementaryItems();
+        }
+
+        function updateComplementary(index, value) {
+            subscriptionData.complementary[index] = value;
+        }
+
+        function removeComplementary(index) {
+            subscriptionData.complementary.splice(index, 1);
+            renderComplementaryItems();
+        }
+
+        // Benefits
+        function renderBenefits() {
+            const grid = document.getElementById('benefitsGrid');
+            grid.innerHTML = subscriptionData.benefits.map((benefit, index) => `
+                <div class="benefit-item">
+                    <i class="fas fa-gift"></i>
+                    <input type="text" value="${benefit}" placeholder="Benefit"
+                           onchange="updateBenefit(${index}, this.value)">
+                    <button onclick="removeBenefit(${index})" style="background: #f44336; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addBenefit() {
+            subscriptionData.benefits.push('New Benefit');
+            renderBenefits();
+        }
+
+        function updateBenefit(index, value) {
+            subscriptionData.benefits[index] = value;
+        }
+
+        function removeBenefit(index) {
+            subscriptionData.benefits.splice(index, 1);
+            renderBenefits();
+        }
+
+        // Day selection
+        function selectDay(day) {
+            currentDay = day;
+            document.querySelectorAll('.day-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            renderMealItems();
+        }
+
+        // Meal items
+        function renderMealItems() {
+            const lunchContainer = document.getElementById('lunchItems');
+            const dinnerContainer = document.getElementById('dinnerItems');
+            
+            const dayMenu = subscriptionData.menu[currentDay] || { lunch: [], dinner: [] };
+            
+            lunchContainer.innerHTML = dayMenu.lunch.map((item, index) => `
+                <div class="meal-item">
+                    <span class="item-name">${item}</span>
+                    <span class="item-price">Included</span>
+                    <i class="fas fa-edit edit-item" onclick="editMealItem('lunch', ${index})"></i>
+                </div>
+            `).join('');
+            
+            dinnerContainer.innerHTML = dayMenu.dinner.map((item, index) => `
+                <div class="meal-item">
+                    <span class="item-name">${item}</span>
+                    <span class="item-price">Included</span>
+                    <i class="fas fa-edit edit-item" onclick="editMealItem('dinner', ${index})"></i>
+                </div>
+            `).join('');
+        }
+
+        // Modal functions
+        let currentMealContext = { type: null, index: null };
+
+        function addMealItem(mealType) {
+            currentMealContext = { type: mealType, index: null };
+            document.getElementById('addItemModal').style.display = 'flex';
+            document.getElementById('modalItemName').value = '';
+            document.getElementById('modalItemPrice').value = '0';
+        }
+
+        function editMealItem(mealType, index) {
+            const itemName = subscriptionData.menu[currentDay][mealType][index];
+            currentMealContext = { type: mealType, index: index };
+            document.getElementById('addItemModal').style.display = 'flex';
+            document.getElementById('modalItemName').value = itemName;
+            document.getElementById('modalItemPrice').value = '0';
+        }
+
+        document.getElementById('modalItemType').addEventListener('change', function() {
+            document.getElementById('customTypeField').style.display = 
+                this.value === 'other' ? 'block' : 'none';
+        });
+
+        function closeModal() {
+            document.getElementById('addItemModal').style.display = 'none';
+        }
+
+        function saveModalItem() {
+            let type = document.getElementById('modalItemType').value;
+            const customType = document.getElementById('modalCustomType').value;
+            const name = document.getElementById('modalItemName').value;
+            
+            if (!name) {
+                alert('Please enter item name');
+                return;
+            }
+            
+            if (type === 'other') {
+                type = customType;
+            }
+            
+            const displayName = type !== 'other' ? `${name} (${type})` : name;
+            
+            if (currentMealContext.index !== null) {
+                // Edit existing
+                subscriptionData.menu[currentDay][currentMealContext.type][currentMealContext.index] = displayName;
+            } else {
+                // Add new
+                if (!subscriptionData.menu[currentDay][currentMealContext.type]) {
+                    subscriptionData.menu[currentDay][currentMealContext.type] = [];
+                }
+                subscriptionData.menu[currentDay][currentMealContext.type].push(displayName);
+            }
+            
+            renderMealItems();
+            closeModal();
+        }
+
+        // Save all settings
+        function saveSubscriptionSettings() {
+            subscriptionData.weeklyPrice = parseInt(document.getElementById('weeklyPrice').value) || 599;
+            subscriptionData.monthlyPrice = parseInt(document.getElementById('monthlyPrice').value) || 1999;
+            subscriptionData.notes = document.getElementById('subscriptionNotes').value;
+            
+            // Here you would save to backend
+            console.log('Saving subscription data:', subscriptionData);
+            
+            alert('Subscription settings saved successfully!');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

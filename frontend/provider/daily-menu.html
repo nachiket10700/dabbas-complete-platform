@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Menu - Dabba's Provider</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/frontend/assets/css/style.css">
+    <link rel="stylesheet" href="/frontend/assets/css/provider.css">
+    
+    <style>
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .business-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.closed {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .business-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .business-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .business-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .business-type {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .verification-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: #4caf50;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Date Selector */
+        .date-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        }
+
+        .date-selector h3 {
+            margin-bottom: 1rem;
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .date-card {
+            text-align: center;
+            padding: 0.8rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .date-card:hover {
+            border-color: #ff6b6b;
+        }
+
+        .date-card.selected {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .date-card .day {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .date-card .date {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .date-card .menu-status {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+        }
+
+        .status-dot-small {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot-lunch {
+            background: #4caf50;
+        }
+
+        .status-dot-dinner {
+            background: #ff9800;
+        }
+
+        /* Deadline Warning */
+        .deadline-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 4px solid #ffc107;
+        }
+
+        .deadline-warning i {
+            font-size: 1.2rem;
+        }
+
+        /* Meal Type Tabs */
+        .meal-type-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .meal-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .meal-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .meal-tab:hover {
+            border-color: #ff6b6b;
+        }
+
+        /* Menu Form */
+        .menu-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        }
+
+        .settings-section {
+            background: #f8f9fc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .settings-section h4 {
+            margin-bottom: 1rem;
+            color: #2d2d2d;
+        }
+
+        .time-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .time-input input[type="time"] {
+            padding: 0.5rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .time-input span {
+            color: #666;
+        }
+
+        /* Meal Price Section */
+        .meal-price-section {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .meal-price-section h4 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .price-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .price-input input {
+            padding: 0.5rem 1rem;
+            border: 2px solid #c8e6c9;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 150px;
+        }
+
+        .price-input span {
+            color: #2e7d32;
+        }
+
+        /* Complementary Section */
+        .complementary-section {
+            background: #fff9e6;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #ffc107;
+        }
+
+        .complementary-section h4 {
+            color: #856404;
+            margin-bottom: 1rem;
+        }
+
+        .complementary-items {
+            margin-bottom: 1rem;
+        }
+
+        .complementary-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid #ffe58f;
+        }
+
+        .complementary-item input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .complementary-item input:focus {
+            border-color: #ffc107;
+        }
+
+        .complementary-item button {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-add-complementary {
+            background: #ffc107;
+            color: #856404;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add-complementary:hover {
+            background: #ffb300;
+        }
+
+        .menu-items {
+            margin-top: 2rem;
+        }
+
+        .menu-item {
+            background: #f8f9fc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            position: relative;
+            border: 2px solid #f0f0f0;
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .menu-item-header h4 {
+            color: #ff6b6b;
+            margin: 0;
+        }
+
+        .remove-item {
+            color: #f44336;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-item:hover .remove-item {
+            opacity: 1;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .extra-price-field {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed #ddd;
+        }
+
+        .quantity-field {
+            margin-top: 0.5rem;
+        }
+
+        .btn-add-item {
+            width: 100%;
+            padding: 1rem;
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            border-radius: 10px;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-item:hover {
+            background: #ffeae4;
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/frontend/index.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="business-status" id="businessStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Open</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userInitials">SK</div>
+                <span id="userName">Spice Kitchen</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="business-card">
+            <div class="business-logo">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <h3 class="business-name" id="businessName">Spice Kitchen</h3>
+            <p class="business-type" id="businessCuisine">North Indian, Mughlai</p>
+            <span class="verification-badge" id="verificationBadge">
+                <i class="fas fa-check-circle"></i> Verified
+            </span>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subscription-settings.html" class="nav-link">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Subscriptions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="daily-menu.html" class="nav-link active">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Daily Menu</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="earnings.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="complaints.html" class="nav-link">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Complaints</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="menu-container">
+            <div class="page-header">
+                <h1>Daily Menu Management</h1>
+            </div>
+
+            <!-- Date Selector -->
+            <div class="date-selector">
+                <h3>Select Date</h3>
+                <div class="date-grid" id="dateGrid">
+                    <!-- Dates will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Deadline Warning -->
+            <div class="deadline-warning" id="deadlineWarning" style="display: none;">
+                <i class="fas fa-clock"></i>
+                <span>Upload deadline is 10 AM. After that, you cannot modify the menu.</span>
+            </div>
+
+            <!-- Meal Type Tabs -->
+            <div class="meal-type-tabs">
+                <div class="meal-tab active" onclick="switchMealType('lunch')">Lunch</div>
+                <div class="meal-tab" onclick="switchMealType('dinner')">Dinner</div>
+            </div>
+
+            <!-- Menu Form -->
+            <div class="menu-form">
+                <!-- Cutoff Time Setting -->
+                <div class="settings-section">
+                    <h4>Order Cutoff Time</h4>
+                    <div class="time-input">
+                        <input type="time" id="cutoffTime" value="11:00">
+                        <span>Customers can order until this time</span>
+                    </div>
+                </div>
+
+                <!-- Meal Price -->
+                <div class="meal-price-section">
+                    <h4><i class="fas fa-tag"></i> Meal Price</h4>
+                    <div class="price-input">
+                        <input type="number" id="mealPrice" value="150" min="0" step="10">
+                        <span>₹ per thali/meal</span>
+                    </div>
+                </div>
+
+                <!-- Complementary Items Section -->
+                <div class="complementary-section">
+                    <h4><i class="fas fa-gift"></i> Complementary Items (Free with Meal)</h4>
+                    <div class="complementary-items" id="complementaryItems">
+                        <!-- Complementary items will be added here -->
+                    </div>
+                    <button class="btn-add-complementary" onclick="addComplementaryItem()">
+                        <i class="fas fa-plus"></i> Add Complementary Item
+                    </button>
+                </div>
+
+                <!-- Menu Items Container -->
+                <div class="menu-items" id="menuItems">
+                    <!-- Menu items will be added here -->
+                </div>
+
+                <!-- Add Item Button -->
+                <button class="btn-add-item" onclick="addMenuItem()">
+                    <i class="fas fa-plus"></i> Add Menu Item
+                </button>
+
+                <!-- Save Button -->
+                <button class="btn-save" onclick="saveDailyMenu()">
+                    Publish Menu
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check if provider is logged in
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'Spice Kitchen';
+
+        // Set user info
+        document.getElementById('userName').textContent = username;
+        document.getElementById('businessName').textContent = username;
+        const initials = username.split(' ').map(n => n[0]).join('').substring(0, 2);
+        document.getElementById('userInitials').textContent = initials;
+
+        // Business status toggle
+        let isOpen = true;
+        document.getElementById('businessStatus').addEventListener('click', function() {
+            isOpen = !isOpen;
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (isOpen) {
+                dot.classList.remove('closed');
+                text.textContent = 'Open';
+            } else {
+                dot.classList.add('closed');
+                text.textContent = 'Closed';
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/frontend/index.html';
+        });
+
+        // ============== MENU FUNCTIONALITY ==============
+
+        let currentDate = new Date().toISOString().split('T')[0];
+        let currentMealType = 'lunch';
+        let menuItems = [];
+        let complementaryItems = [];
+
+        // Menu data storage
+        let menuDatabase = {};
+
+        // Initialize with sample data
+        function initSampleData() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            menuDatabase[today] = {
+                lunch: {
+                    cutoff_time: '11:00',
+                    meal_price: 150,
+                    complementary: ['Salad', 'Raita', 'Papad'],
+                    items: [
+                        { type: 'chapati', name: 'Tawa Chapati', quantity: 50, extraPrice: 5 },
+                        { type: 'rice', name: 'Jeera Rice', extraPrice: 30 },
+                        { type: 'dal', name: 'Dal Tadka', extraPrice: 40 },
+                        { type: 'sabji', name: 'Mix Veg', extraPrice: 50 }
+                    ]
+                },
+                dinner: {
+                    cutoff_time: '19:00',
+                    meal_price: 180,
+                    complementary: ['Salad', 'Raita', 'Papad', 'Pickle'],
+                    items: [
+                        { type: 'chapati', name: 'Butter Naan', quantity: 40, extraPrice: 8 },
+                        { type: 'rice', name: 'Veg Biryani', extraPrice: 50 },
+                        { type: 'dal', name: 'Dal Makhani', extraPrice: 45 },
+                        { type: 'sabji', name: 'Paneer Butter Masala', extraPrice: 60 }
+                    ]
+                }
+            };
+            
+            // Set complementary items for current view
+            if (menuDatabase[today] && menuDatabase[today][currentMealType]) {
+                complementaryItems = [...menuDatabase[today][currentMealType].complementary];
+            }
+        }
+
+        initSampleData();
+
+        // Generate dates for the next 7 days
+        function generateDates() {
+            const dateGrid = document.getElementById('dateGrid');
+            const today = new Date();
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            let datesHTML = '';
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateString = `${year}-${month}-${day}`;
+                
+                const dayName = days[date.getDay()];
+                const monthName = months[date.getMonth()];
+                const dateNum = date.getDate();
+                
+                const isSelected = dateString === currentDate ? 'selected' : '';
+                
+                // Check if menu exists for this date
+                const hasLunch = menuDatabase[dateString]?.lunch?.items?.length > 0;
+                const hasDinner = menuDatabase[dateString]?.dinner?.items?.length > 0;
+                
+                datesHTML += `
+                    <div class="date-card ${isSelected}" onclick="selectDate('${dateString}')">
+                        <div class="day">${dayName}</div>
+                        <div class="date">${monthName} ${dateNum}</div>
+                        <div class="menu-status">
+                            ${hasLunch ? '<span class="status-dot-small status-dot-lunch" title="Lunch menu set"></span>' : ''}
+                            ${hasDinner ? '<span class="status-dot-small status-dot-dinner" title="Dinner menu set"></span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            dateGrid.innerHTML = datesHTML;
+        }
+
+        // Select a date
+        function selectDate(dateString) {
+            currentDate = dateString;
+            
+            // Update UI
+            document.querySelectorAll('.date-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            event.currentTarget.classList.add('selected');
+            
+            // Check deadline
+            checkDeadline();
+            
+            // Load menu for selected date
+            loadMenu();
+        }
+
+        // Switch between lunch and dinner
+        function switchMealType(type) {
+            currentMealType = type;
+            document.querySelectorAll('.meal-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load menu for selected meal type
+            loadMenu();
+        }
+
+        // Check if deadline has passed (10 AM)
+        function checkDeadline() {
+            const now = new Date();
+            const [year, month, day] = currentDate.split('-').map(Number);
+            const deadline = new Date(year, month - 1, day, 10, 0, 0);
+            const warning = document.getElementById('deadlineWarning');
+            const saveBtn = document.querySelector('.btn-save');
+            
+            if (now > deadline) {
+                warning.style.display = 'flex';
+                saveBtn.disabled = true;
+            } else {
+                warning.style.display = 'none';
+                saveBtn.disabled = false;
+            }
+        }
+
+        // Load menu for current date and meal type
+        function loadMenu() {
+            if (menuDatabase[currentDate] && menuDatabase[currentDate][currentMealType]) {
+                const menuData = menuDatabase[currentDate][currentMealType];
+                menuItems = menuData.items ? [...menuData.items] : [];
+                complementaryItems = menuData.complementary ? [...menuData.complementary] : [];
+                document.getElementById('cutoffTime').value = menuData.cutoff_time || (currentMealType === 'lunch' ? '11:00' : '19:00');
+                document.getElementById('mealPrice').value = menuData.meal_price || 150;
+            } else {
+                menuItems = [];
+                complementaryItems = [];
+                document.getElementById('cutoffTime').value = currentMealType === 'lunch' ? '11:00' : '19:00';
+                document.getElementById('mealPrice').value = 150;
+            }
+            
+            renderComplementaryItems();
+            renderMenuItems();
+        }
+
+        // Add complementary item
+        function addComplementaryItem() {
+            complementaryItems.push('');
+            renderComplementaryItems();
+        }
+
+        // Update complementary item
+        function updateComplementaryItem(index, value) {
+            complementaryItems[index] = value;
+        }
+
+        // Remove complementary item
+        function removeComplementaryItem(index) {
+            complementaryItems.splice(index, 1);
+            renderComplementaryItems();
+        }
+
+        // Render complementary items
+        function renderComplementaryItems() {
+            const container = document.querySelector('.complementary-items');
+            container.innerHTML = complementaryItems.map((item, index) => `
+                <div class="complementary-item">
+                    <input type="text" value="${item}" placeholder="e.g., Salad, Raita, Papad" 
+                           onchange="updateComplementaryItem(${index}, this.value)">
+                    <button onclick="removeComplementaryItem(${index})"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // Add a new menu item - ANY item name allowed!
+        function addMenuItem() {
+            // First, ask if they want to use a preset type or custom
+            const usePreset = confirm('Would you like to select from common types? Click OK for preset list, Cancel to enter custom type');
+            
+            let type = '';
+            
+            if (usePreset) {
+                // Show preset options with prompt
+                const typeChoice = prompt(
+                    'Select item type:\n' +
+                    '1. Chapati\n' +
+                    '2. Rice\n' +
+                    '3. Dal\n' +
+                    '4. Sabji\n' +
+                    '5. Other (enter custom)',
+                    '1'
+                );
+                
+                // Convert choice to type
+                switch(typeChoice) {
+                    case '1':
+                        type = 'chapati';
+                        break;
+                    case '2':
+                        type = 'rice';
+                        break;
+                    case '3':
+                        type = 'dal';
+                        break;
+                    case '4':
+                        type = 'sabji';
+                        break;
+                    default:
+                        // If they entered something else, ask for custom type
+                        type = prompt('Enter custom item type (e.g., Salad, Raita, Papad, Pickle):', '');
+                        if (!type || type.trim() === '') {
+                            alert('Please enter a valid type');
+                            return;
+                        }
+                }
+            } else {
+                // Direct custom type entry
+                type = prompt('Enter item type (e.g., Salad, Raita, Papad, Pickle, Roti, Paratha, etc.):', '');
+                if (!type || type.trim() === '') {
+                    alert('Please enter a valid type');
+                    return;
+                }
+            }
+            
+            // Get item name (always required)
+            const name = prompt('Enter item name:', '');
+            if (!name || name.trim() === '') {
+                alert('Please enter item name');
+                return;
+            }
+            
+            // Create new item object
+            const newItem = { 
+                type: type.toLowerCase().trim(), 
+                name: name.trim() 
+            };
+            
+            // If it's chapati or similar bread items, ask for quantity
+            const breadTypes = ['chapati', 'roti', 'naan', 'paratha', 'puri', 'bhakari'];
+            if (breadTypes.includes(type.toLowerCase())) {
+                const quantity = prompt('Enter quantity available:', '50');
+                newItem.quantity = parseInt(quantity) || 50;
+            }
+            
+            // Ask for extra price (for additional portion)
+            const extraPrice = prompt('Enter extra price (for additional portion) in ₹:', '0');
+            newItem.extraPrice = parseInt(extraPrice) || 0;
+            
+            // Add to menu
+            menuItems.push(newItem);
+            renderMenuItems();
+        }
+
+        // Update item field
+        function updateItemField(index, field, value) {
+            menuItems[index][field] = value;
+        }
+
+        // Remove an item
+        function removeItem(index) {
+            if (confirm('Remove this item?')) {
+                menuItems.splice(index, 1);
+                renderMenuItems();
+            }
+        }
+
+        // Render all menu items
+        function renderMenuItems() {
+            const container = document.getElementById('menuItems');
+            
+            if (menuItems.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">No menu items added yet. Click "Add Menu Item" to start.</p>';
+                return;
+            }
+            
+            container.innerHTML = menuItems.map((item, index) => `
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <h4>${item.type.toUpperCase()}</h4>
+                        <i class="fas fa-times remove-item" onclick="removeItem(${index})"></i>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Item Type</label>
+                            <select onchange="updateItemField(${index}, 'type', this.value)">
+                                <option value="chapati" ${item.type === 'chapati' ? 'selected' : ''}>Chapati</option>
+                                <option value="rice" ${item.type === 'rice' ? 'selected' : ''}>Rice</option>
+                                <option value="dal" ${item.type === 'dal' ? 'selected' : ''}>Dal</option>
+                                <option value="sabji" ${item.type === 'sabji' ? 'selected' : ''}>Sabji</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Item Name</label>
+                            <input type="text" value="${item.name || ''}" placeholder="Enter item name" onchange="updateItemField(${index}, 'name', this.value)">
+                        </div>
+                    </div>
+                    
+                    ${item.type === 'chapati' ? `
+                        <div class="quantity-field">
+                            <div class="form-group">
+                                <label>Quantity Available</label>
+                                <input type="number" value="${item.quantity || 50}" min="1" onchange="updateItemField(${index}, 'quantity', this.value)">
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="extra-price-field">
+                        <div class="form-group">
+                            <label>Extra Price (for additional portion)</label>
+                            <input type="number" value="${item.extraPrice || 0}" min="0" onchange="updateItemField(${index}, 'extraPrice', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Save the daily menu
+        function saveDailyMenu() {
+            if (menuItems.length === 0) {
+                alert('Please add at least one menu item');
+                return;
+            }
+            
+            // Save to database
+            if (!menuDatabase[currentDate]) {
+                menuDatabase[currentDate] = {};
+            }
+            
+            menuDatabase[currentDate][currentMealType] = {
+                cutoff_time: document.getElementById('cutoffTime').value,
+                meal_price: parseInt(document.getElementById('mealPrice').value) || 150,
+                complementary: complementaryItems.filter(item => item.trim() !== ''),
+                items: menuItems.map(item => {
+                    const baseItem = { 
+                        type: item.type,
+                        name: item.name,
+                        extraPrice: item.extraPrice || 0
+                    };
+                    if (item.type === 'chapati') {
+                        baseItem.quantity = item.quantity || 50;
+                    }
+                    return baseItem;
+                })
+            };
+            
+            alert(`Menu for ${currentDate} (${currentMealType}) saved successfully!`);
+            
+            // Refresh date grid to show status dots
+            generateDates();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateDates();
+            loadMenu();
+            checkDeadline();
+        });
+    </script>
+</body>
+</html>

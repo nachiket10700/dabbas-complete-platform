@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders - Dabba's Provider</title>
     
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ✅ CSS FILES -->
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- CSS Files -->
     <link rel="stylesheet" href="/frontend/assets/css/style.css">
     <link rel="stylesheet" href="/frontend/assets/css/provider.css">
-    <link rel="stylesheet" href="/frontend/assets/css/complaints.css"> <!-- For complaints page -->
+    
     <style>
         * {
             margin: 0;
@@ -24,7 +31,7 @@
             color: #2d2d2d;
         }
 
-        /* Navigation - same as menu.html */
+        /* Navigation */
         .navbar {
             position: fixed;
             top: 0;
@@ -60,6 +67,33 @@
             gap: 2rem;
         }
 
+        .business-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f5f5f5;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .status-dot.closed {
+            background: #f44336;
+        }
+
         .user-menu {
             display: flex;
             align-items: center;
@@ -82,7 +116,7 @@
             font-weight: 600;
         }
 
-        /* Sidebar - same as menu.html */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             left: 0;
@@ -93,6 +127,49 @@
             border-right: 1px solid #f0f0f0;
             padding: 2rem 1rem;
             overflow-y: auto;
+        }
+
+        .business-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .business-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .business-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .business-type {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .verification-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: #4caf50;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         .nav-menu {
@@ -147,38 +224,58 @@
             font-weight: 700;
         }
 
-        /* Filters */
-        .order-filters {
-            display: flex;
+        /* Order Stats */
+        .order-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
             gap: 1rem;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
         }
 
-        .filter-btn {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #ff6b6b;
-            border-radius: 50px;
-            background: transparent;
-            color: #ff6b6b;
-            font-weight: 600;
+        .stat-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .filter-btn.active {
-            background: #ff6b6b;
-            color: white;
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.1);
         }
 
-        .filter-btn:hover {
-            background: #ff6b6b;
-            color: white;
+        .stat-card.active {
+            border: 2px solid #ff6b6b;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .search-box {
             flex: 1;
             position: relative;
+            max-width: 300px;
         }
 
         .search-box input {
@@ -195,6 +292,14 @@
             top: 50%;
             transform: translateY(-50%);
             color: #ff6b6b;
+        }
+
+        select {
+            padding: 0.8rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            min-width: 150px;
         }
 
         /* Orders Table */
@@ -261,38 +366,25 @@
             color: #721c24;
         }
 
-        .order-actions {
+        .action-buttons {
             display: flex;
             gap: 0.5rem;
         }
 
-        .btn-action {
-            padding: 0.5rem 1rem;
-            border: none;
+        .btn-icon {
+            width: 35px;
+            height: 35px;
             border-radius: 8px;
+            border: none;
+            background: #f0f0f0;
+            color: #666;
             cursor: pointer;
-            font-weight: 500;
             transition: all 0.3s ease;
         }
 
-        .btn-view {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
-        .btn-update {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-
-        .btn-accept {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .btn-reject {
-            background: #ffebee;
-            color: #d32f2f;
+        .btn-icon:hover {
+            background: #ff6b6b;
+            color: white;
         }
 
         /* Modal */
@@ -305,25 +397,45 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 2000;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
             background: white;
             max-width: 500px;
-            margin: 2rem auto;
+            width: 90%;
             padding: 2rem;
             border-radius: 20px;
         }
 
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
         .status-select {
             width: 100%;
-            padding: 0.8rem;
+            padding: 1rem;
             border: 2px solid #f0f0f0;
             border-radius: 10px;
             margin: 1rem 0;
+            font-size: 1rem;
         }
 
-        .btn-save {
+        .btn-update {
             width: 100%;
             padding: 1rem;
             background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
@@ -333,6 +445,37 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+            .order-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .order-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .filters {
+                flex-direction: column;
+            }
+            .search-box {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -340,15 +483,32 @@
     <nav class="navbar">
         <a href="/frontend/index.html" class="logo">Dabba<span>'s</span></a>
         <div class="nav-right">
-            <div class="user-menu">
-                <div class="user-avatar">SK</div>
-                <span>Spice Kitchen</span>
+            <div class="business-status" id="businessStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Open</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userInitials">SK</div>
+                <span id="userName">Spice Kitchen</span>
+                <i class="fas fa-chevron-down"></i>
             </div>
         </div>
     </nav>
 
     <!-- Sidebar -->
     <aside class="sidebar">
+        <div class="business-card">
+            <div class="business-logo">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <h3 class="business-name" id="businessName">Spice Kitchen</h3>
+            <p class="business-type" id="businessCuisine">North Indian, Mughlai</p>
+            <span class="verification-badge" id="verificationBadge">
+                <i class="fas fa-check-circle"></i> Verified
+            </span>
+        </div>
+
         <ul class="nav-menu">
             <li class="nav-item">
                 <a href="dashboard.html" class="nav-link">
@@ -363,9 +523,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="menu.html" class="nav-link">
+                <a href="subscription-settings.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Subscriptions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="daily-menu.html" class="nav-link">
                     <i class="fas fa-utensil-spoon"></i>
-                    <span>Menu Manager</span>
+                    <span>daily-menu</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -386,6 +552,12 @@
                     <span>Settings</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
         </ul>
     </aside>
 
@@ -395,22 +567,56 @@
             <h1>Orders</h1>
         </div>
 
+        <!-- Order Stats -->
+        <div class="order-stats">
+            <div class="stat-card active" onclick="filterOrders('all')">
+                <div class="stat-number">24</div>
+                <div class="stat-label">All Orders</div>
+            </div>
+            <div class="stat-card" onclick="filterOrders('pending')">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card" onclick="filterOrders('confirmed')">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-card" onclick="filterOrders('preparing')">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Preparing</div>
+            </div>
+            <div class="stat-card" onclick="filterOrders('delivered')">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Delivered</div>
+            </div>
+        </div>
+
         <!-- Filters -->
-        <div class="order-filters">
-            <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
-            <button class="filter-btn" onclick="filterOrders('pending')">Pending</button>
-            <button class="filter-btn" onclick="filterOrders('preparing')">Preparing</button>
-            <button class="filter-btn" onclick="filterOrders('ready')">Ready</button>
-            <button class="filter-btn" onclick="filterOrders('delivered')">Delivered</button>
+        <div class="filters">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search orders..." id="searchInput">
+                <input type="text" placeholder="Search orders by ID, customer..." id="searchInput">
             </div>
+            <select id="statusFilter" onchange="applyFilters()">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="preparing">Preparing</option>
+                <option value="ready">Ready</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="dateFilter" onchange="applyFilters()">
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
         </div>
 
         <!-- Orders Table -->
         <div class="orders-table">
-            <table id="ordersTable">
+            <table>
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -423,7 +629,7 @@
                     </tr>
                 </thead>
                 <tbody id="ordersBody">
-                    <!-- Orders will be loaded here -->
+                    <!-- Order rows will be loaded here -->
                 </tbody>
             </table>
         </div>
@@ -432,7 +638,10 @@
     <!-- Status Update Modal -->
     <div id="statusModal" class="modal">
         <div class="modal-content">
-            <h3>Update Order Status</h3>
+            <div class="modal-header">
+                <h3>Update Order Status</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
             <select id="orderStatus" class="status-select">
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -442,78 +651,196 @@
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
             </select>
-            <button class="btn-save" onclick="updateStatus()">Update Status</button>
+            <button class="btn-update" onclick="updateOrderStatus()">Update Status</button>
         </div>
     </div>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
     <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Check if provider is logged in
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+        const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'Spice Kitchen';
+
+        // Redirect to login if not authenticated
+        if (!token || userRole !== 'provider') {
+            window.location.href = 'login.html';
+        }
+
+        // Set user info
+        document.getElementById('userName').textContent = username;
+        document.getElementById('businessName').textContent = username;
+        const initials = username.split(' ').map(n => n[0]).join('').substring(0, 2);
+        document.getElementById('userInitials').textContent = initials;
+
+        // Business status toggle
+        let isOpen = true;
+        document.getElementById('businessStatus').addEventListener('click', function() {
+            isOpen = !isOpen;
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (isOpen) {
+                dot.classList.remove('closed');
+                text.textContent = 'Open';
+            } else {
+                dot.classList.add('closed');
+                text.textContent = 'Closed';
+            }
+        });
+
         // Sample orders data
-        let orders = [
-            { id: 'ORD001', customer: 'Rahul Sharma', items: ['Butter Chicken', 'Naan'], total: 450, time: '10:30 AM', status: 'pending', address: 'Andheri East, Mumbai' },
-            { id: 'ORD002', customer: 'Priya Patel', items: ['Paneer Tikka', 'Rice'], total: 380, time: '10:15 AM', status: 'confirmed', address: 'Bandra West, Mumbai' },
-            { id: 'ORD003', customer: 'Amit Kumar', items: ['Biryani', 'Raita'], total: 420, time: '09:45 AM', status: 'preparing', address: 'Juhu, Mumbai' },
-            { id: 'ORD004', customer: 'Sneha Reddy', items: ['Dal Makhani', 'Naan'], total: 340, time: '09:30 AM', status: 'ready', address: 'Powai, Mumbai' },
-            { id: 'ORD005', customer: 'Vikram Singh', items: ['Chicken Tikka', 'Salad'], total: 520, time: '09:15 AM', status: 'delivered', address: 'Malad West, Mumbai' },
-            { id: 'ORD006', customer: 'Anita Desai', items: ['Veg Thali'], total: 280, time: '08:50 AM', status: 'delivered', address: 'Goregaon East, Mumbai' },
-            { id: 'ORD007', customer: 'Rajesh Khanna', items: ['Fish Curry', 'Rice'], total: 490, time: '08:30 AM', status: 'cancelled', address: 'Dadar, Mumbai' }
+        const orders = [
+            {
+                id: 'ORD001',
+                customer: 'Rahul Sharma',
+                items: ['Butter Chicken', 'Naan'],
+                total: 450,
+                time: '10:30 AM',
+                status: 'pending',
+                address: 'Andheri East, Mumbai'
+            },
+            {
+                id: 'ORD002',
+                customer: 'Priya Patel',
+                items: ['Paneer Tikka', 'Rice'],
+                total: 380,
+                time: '10:15 AM',
+                status: 'confirmed',
+                address: 'Bandra West, Mumbai'
+            },
+            {
+                id: 'ORD003',
+                customer: 'Amit Kumar',
+                items: ['Biryani', 'Raita'],
+                total: 420,
+                time: '09:45 AM',
+                status: 'preparing',
+                address: 'Juhu, Mumbai'
+            },
+            {
+                id: 'ORD004',
+                customer: 'Sneha Reddy',
+                items: ['Dal Makhani', 'Naan'],
+                total: 340,
+                time: '09:30 AM',
+                status: 'ready',
+                address: 'Powai, Mumbai'
+            },
+            {
+                id: 'ORD005',
+                customer: 'Vikram Singh',
+                items: ['Chicken Tikka', 'Salad'],
+                total: 520,
+                time: '09:15 AM',
+                status: 'delivered',
+                address: 'Malad West, Mumbai'
+            },
+            {
+                id: 'ORD006',
+                customer: 'Anita Desai',
+                items: ['Veg Thali'],
+                total: 280,
+                time: '08:50 AM',
+                status: 'delivered',
+                address: 'Goregaon East, Mumbai'
+            },
+            {
+                id: 'ORD007',
+                customer: 'Rajesh Khanna',
+                items: ['Fish Curry', 'Rice'],
+                total: 490,
+                time: '08:30 AM',
+                status: 'cancelled',
+                address: 'Dadar, Mumbai'
+            }
         ];
 
+        let currentFilter = 'all';
         let currentOrderId = null;
 
         // Load orders
-        function loadOrders(filter = 'all', search = '') {
+        function loadOrders() {
             let filteredOrders = orders;
             
-            if (filter !== 'all') {
-                filteredOrders = orders.filter(o => o.status === filter);
+            if (currentFilter !== 'all') {
+                filteredOrders = orders.filter(o => o.status === currentFilter);
             }
-            
-            if (search) {
+
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            if (searchTerm) {
                 filteredOrders = filteredOrders.filter(o => 
-                    o.id.toLowerCase().includes(search.toLowerCase()) ||
-                    o.customer.toLowerCase().includes(search.toLowerCase())
+                    o.id.toLowerCase().includes(searchTerm) ||
+                    o.customer.toLowerCase().includes(searchTerm)
                 );
             }
 
             const tbody = document.getElementById('ordersBody');
-            tbody.innerHTML = filteredOrders.map(order => `
-                <tr>
-                    <td><strong>${order.id}</strong></td>
-                    <td>${order.customer}</td>
-                    <td>${order.items.join(', ')}</td>
-                    <td>₹${order.total}</td>
-                    <td>${order.time}</td>
-                    <td>
-                        <span class="order-status status-${order.status}">
-                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="order-actions">
-                            <button class="btn-action btn-view" onclick="viewOrder('${order.id}')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn-action btn-update" onclick="openStatusModal('${order.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = filteredOrders.map(order => {
+                const statusClass = 
+                    order.status === 'pending' ? 'status-pending' :
+                    order.status === 'confirmed' ? 'status-confirmed' :
+                    order.status === 'preparing' ? 'status-preparing' :
+                    order.status === 'ready' ? 'status-ready' :
+                    order.status === 'delivered' ? 'status-delivered' : 
+                    order.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
+                
+                return `
+                    <tr>
+                        <td><strong>${order.id}</strong></td>
+                        <td>${order.customer}</td>
+                        <td>${order.items.join(', ')}</td>
+                        <td>₹${order.total}</td>
+                        <td>${order.time}</td>
+                        <td>
+                            <span class="order-status ${statusClass}">
+                                ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon" onclick="viewOrder('${order.id}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon" onclick="openStatusModal('${order.id}')" title="Update Status">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon" onclick="printOrder('${order.id}')" title="Print">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // Filter orders
         function filterOrders(status) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            loadOrders(status, document.getElementById('searchInput').value);
+            document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            currentFilter = status;
+            loadOrders();
         }
 
-        // Search orders
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const activeFilter = document.querySelector('.filter-btn.active').textContent.toLowerCase();
-            const filter = activeFilter === 'all orders' ? 'all' : activeFilter;
-            loadOrders(filter, e.target.value);
+        // Apply filters
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            currentFilter = statusFilter === 'all' ? 'all' : statusFilter;
+            loadOrders();
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', function() {
+            applyFilters();
         });
 
         // View order details
@@ -529,36 +856,60 @@
             currentOrderId = orderId;
             const order = orders.find(o => o.id === orderId);
             document.getElementById('orderStatus').value = order.status;
-            document.getElementById('statusModal').style.display = 'block';
+            document.getElementById('statusModal').style.display = 'flex';
         }
 
-        // Update status
-        function updateStatus() {
+        // Update order status
+        function updateOrderStatus() {
             const newStatus = document.getElementById('orderStatus').value;
             const order = orders.find(o => o.id === currentOrderId);
             if (order) {
                 order.status = newStatus;
                 loadOrders();
-                document.getElementById('statusModal').style.display = 'none';
+                closeModal();
                 alert(`Order ${currentOrderId} status updated to ${newStatus}`);
             }
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('statusModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
+        // Print order
+        function printOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                // Create a printable version
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                        <head><title>Order ${orderId}</title></head>
+                        <body>
+                            <h1>Order #${orderId}</h1>
+                            <p>Customer: ${order.customer}</p>
+                            <p>Items: ${order.items.join(', ')}</p>
+                            <p>Total: ₹${order.total}</p>
+                            <p>Time: ${order.time}</p>
+                            <p>Status: ${order.status}</p>
+                        </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
             }
         }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('statusModal').style.display = 'none';
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/frontend/index.html';
+        });
 
         // Initialize
         loadOrders();
     </script>
-      <!-- ✅ JS FILES -->
-    <script src="/frontend/assets/js/main.js"></script>
-    <script src="/frontend/assets/js/provider.js"></script>
-    <script src="/frontend/assets/js/translations.js"></script>
-    <script src="/frontend/assets/js/complaints.js"></script>   <!-- For complaints page -->
 </body>
 </html>
