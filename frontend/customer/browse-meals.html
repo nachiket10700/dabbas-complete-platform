@@ -174,6 +174,48 @@
             padding: 2rem;
         }
 
+        /* Time Slot Banner */
+        .time-slot-banner {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .time-slot-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .slot {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slot i {
+            font-size: 1.5rem;
+        }
+
+        .slot.active {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+
+        .cutoff-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
         /* Hero Banner */
         .hero-banner {
             background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
@@ -461,14 +503,42 @@
             font-size: 0.8rem;
         }
 
+        /* Availability Badge */
+        .availability-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .available-now {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .available-later {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Updated Tiffin Footer */
         .tiffin-footer {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             padding: 1rem 1.5rem 1.5rem;
+            flex-wrap: wrap;
         }
 
         .btn-subscribe {
             flex: 2;
+            min-width: 120px;
             padding: 0.8rem;
             background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
             color: white;
@@ -477,6 +547,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .btn-subscribe:hover {
@@ -484,8 +555,51 @@
             box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
         }
 
+        /* Order Now Button */
+        .btn-order-now {
+            flex: 2;
+            min-width: 120px;
+            padding: 0.8rem;
+            background: #fc8019;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(252, 128, 25, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(252, 128, 25, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(252, 128, 25, 0);
+            }
+        }
+
+        .btn-order-now:hover {
+            background: #e67314;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(252, 128, 25, 0.3);
+        }
+
+        .btn-order-now i {
+            font-size: 1rem;
+        }
+
         .btn-preview {
             flex: 1;
+            min-width: 60px;
             padding: 0.8rem;
             background: #f5f5f5;
             color: #ff6b6b;
@@ -494,10 +608,439 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .btn-preview:hover {
             background: #fff5f0;
+        }
+
+        /* ===== ENHANCED MODAL DESIGN ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 2rem auto;
+            border-radius: 30px;
+            position: relative;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #fc8019, #ff6b6b);
+            padding: 2rem;
+            color: white;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .close {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* Day Selector Tabs */
+        .day-selector {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .day-tab {
+            padding: 0.8rem 2rem;
+            background: #f5f5f5;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px 50px 0 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: none;
+        }
+
+        .day-tab.active {
+            background: #fc8019;
+            color: white;
+            border-color: #fc8019;
+        }
+
+        .day-tab.today {
+            color: #fc8019;
+        }
+
+        .day-tab.tomorrow {
+            color: #667eea;
+        }
+
+        .tiffin-info-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            background: #f8f9fc;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tiffin-icon-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
+        }
+
+        .tiffin-details-compact h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            color: #2d2d2d;
+        }
+
+        .tiffin-details-compact p {
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tiffin-details-compact i {
+            color: #ff6b6b;
+            width: 20px;
+        }
+
+        .meal-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .meal-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 20px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-5px);
+            border-color: #fc8019;
+            box-shadow: 0 15px 30px rgba(252, 128, 25, 0.15);
+        }
+
+        .meal-card.selected {
+            border-color: #fc8019;
+            background: #fff5f0;
+        }
+
+        .meal-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .cutoff-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .meal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .meal-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2d2d2d;
+        }
+
+        .delivery-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin: 0.5rem 0;
+        }
+
+        .meal-items-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .meal-items-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .meal-items-list i {
+            color: #4caf50;
+            font-size: 0.8rem;
+        }
+
+        .meal-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #f0f0f0;
+        }
+
+        .meal-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fc8019;
+        }
+
+        .meal-price small {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .available-now-badge {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .customization-section {
+            padding: 0 2rem 2rem;
+        }
+
+        .customization-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d2d2d;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .customization-title i {
+            color: #fc8019;
+        }
+
+        .customization-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .custom-option {
+            padding: 0.5rem 1.2rem;
+            background: #f5f5f5;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .custom-option:hover {
+            border-color: #fc8019;
+            background: #fff5f0;
+        }
+
+        .custom-option.selected {
+            background: #fc8019;
+            border-color: #fc8019;
+            color: white;
+        }
+
+        .custom-option.selected .extra-price {
+            color: white;
+            opacity: 0.9;
+        }
+
+        .extra-price {
+            font-size: 0.8rem;
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .special-request {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+            resize: vertical;
+        }
+
+        .special-request:focus {
+            outline: none;
+            border-color: #fc8019;
+        }
+
+        .price-breakdown {
+            background: #f8f9fc;
+            padding: 1rem 2rem;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            color: #666;
+        }
+
+        .price-row.total {
+            font-weight: 700;
+            color: #2d2d2d;
+            font-size: 1.2rem;
+            border-top: 1px dashed #f0f0f0;
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+        }
+
+        .price-row.total span:last-child {
+            color: #fc8019;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: #f8f9fc;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-confirm-order {
+            flex: 2;
+            padding: 1rem;
+            background: linear-gradient(135deg, #fc8019, #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-confirm-order:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(252, 128, 25, 0.3);
+        }
+
+        .btn-confirm-order:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-confirm-order i {
+            font-size: 1.1rem;
         }
 
         /* Weekly Menu */
@@ -681,6 +1224,45 @@
             transform: translateX(5px);
         }
 
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 1rem 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-success {
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert-error {
+            border-left: 4px solid #f44336;
+        }
+
+        .alert-info {
+            border-left: 4px solid #2196f3;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -694,11 +1276,33 @@
                 text-align: center;
                 gap: 1rem;
             }
+            .time-slot-banner {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            .time-slot-info {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
             .week-tabs {
                 flex-wrap: wrap;
             }
             .menu-showcase {
                 grid-template-columns: 1fr;
+            }
+            .tiffin-footer {
+                flex-direction: column;
+            }
+            .btn-subscribe, .btn-order-now, .btn-preview {
+                width: 100%;
+            }
+            .meal-options-grid {
+                grid-template-columns: 1fr;
+            }
+            .day-selector {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
     </style>
@@ -784,6 +1388,26 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Time Slot Banner -->
+        <div class="time-slot-banner" id="timeSlotBanner">
+            <div class="time-slot-info">
+                <div class="slot" id="lunchSlot">
+                    <i class="fas fa-sun"></i>
+                    <span>Lunch: 12:00 PM</span>
+                </div>
+                <div class="slot" id="dinnerSlot">
+                    <i class="fas fa-moon"></i>
+                    <span>Dinner: 7:30 PM</span>
+                </div>
+            </div>
+            <div class="cutoff-warning" id="cutoffWarning">
+                <i class="fas fa-clock"></i> Order within 1 hour for lunch
+            </div>
+        </div>
+
         <!-- Hero Banner -->
         <div class="hero-banner">
             <div class="hero-text">
@@ -842,12 +1466,12 @@
             </div>
         </div>
 
-        <!-- Tiffin Cards with Menu Images -->
+        <!-- Tiffin Cards -->
         <div class="tiffin-grid" id="tiffinGrid">
             <!-- Tiffins will be loaded here -->
         </div>
 
-        <!-- Weekly Menu Preview with Images -->
+        <!-- Weekly Menu Preview -->
         <div class="weekly-section">
             <div class="section-header">
                 <h2><i class="fas fa-calendar-alt"></i> This Week's Menu - Nashik Special</h2>
@@ -864,7 +1488,7 @@
             </div>
         </div>
 
-        <!-- Tiffin Providers in Nashik -->
+        <!-- Tiffin Providers -->
         <div class="section-header">
             <h2><i class="fas fa-store"></i> Tiffin Services in Nashik</h2>
             <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
@@ -875,13 +1499,38 @@
         </div>
     </main>
 
+    <!-- Meal Selection Modal -->
+    <div id="mealModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-bolt"></i> Order Your Tiffin</h2>
+                <p>Fresh homemade meal delivered to your doorstep</p>
+                <span class="close" onclick="closeMealModal()">&times;</span>
+            </div>
+            
+            <!-- Day Selector -->
+            <div class="day-selector" id="daySelector">
+                <div class="day-tab today active" onclick="selectDay('today')">
+                    <i class="fas fa-sun"></i> Today
+                </div>
+                <div class="day-tab tomorrow" onclick="selectDay('tomorrow')">
+                    <i class="fas fa-calendar-plus"></i> Tomorrow
+                </div>
+            </div>
+            
+            <div id="mealModalContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Get user info
+        // ==================== CONFIGURATION ====================
         const username = localStorage.getItem('username') || 'Pranjal';
         document.getElementById('userName').textContent = username.split(' ')[0];
         document.getElementById('userInitials').textContent = username.charAt(0);
 
-        // Tiffin Data - Nashik Areas
+        // Tiffin Data
         const tiffins = [
             {
                 id: 1,
@@ -890,18 +1539,22 @@
                 type: 'student',
                 category: 'veg',
                 price: 2000,
+                oneTimePrice: 75,
                 duration: 'month',
                 lunch: {
                     items: ['2 Bhakari/Chapati', '1 Sabji (Veg)', 'Dal/Pithla', 'Rice', 'Koshimbir'],
-                    image: '🍛'
+                    image: '🍛',
+                    cutoff: '11:30 AM'
                 },
                 dinner: {
                     items: ['2 Bhakari/Chapati', '1 Sabji', 'Dal/Rice', 'Papad', 'Thecha'],
-                    image: '🍲'
+                    image: '🍲',
+                    cutoff: '7:00 PM'
                 },
                 rating: 4.8,
                 reviews: 156,
-                localSpecial: 'Varan Bhat special on Friday'
+                localSpecial: 'Varan Bhat special on Friday',
+                prepTime: '30-40 min'
             },
             {
                 id: 2,
@@ -910,18 +1563,22 @@
                 type: 'professional',
                 category: 'veg',
                 price: 2500,
+                oneTimePrice: 80,
                 duration: 'month',
                 lunch: {
                     items: ['3 Chapati', '2 Sabji', 'Dal', 'Rice', 'Curd', 'Salad'],
-                    image: '🍛'
+                    image: '🍛',
+                    cutoff: '11:15 AM'
                 },
                 dinner: {
                     items: ['3 Chapati', '2 Sabji', 'Dal', 'Rice', 'Papad'],
-                    image: '🍲'
+                    image: '🍲',
+                    cutoff: '6:45 PM'
                 },
                 rating: 4.9,
                 reviews: 234,
-                localSpecial: 'Puran Poli on Sunday'
+                localSpecial: 'Puran Poli on Sunday',
+                prepTime: '35-45 min'
             },
             {
                 id: 3,
@@ -930,18 +1587,22 @@
                 type: 'student',
                 category: 'veg',
                 price: 1800,
+                oneTimePrice: 70,
                 duration: 'month',
                 lunch: {
                     items: ['2 Bhakari', '1 Sabji', 'Pithla', 'Rice', 'Thecha'],
-                    image: '🍛'
+                    image: '🍛',
+                    cutoff: '11:45 AM'
                 },
                 dinner: {
                     items: ['2 Bhakari', '1 Sabji', 'Dal/Rice', 'Papad'],
-                    image: '🍲'
+                    image: '🍲',
+                    cutoff: '7:15 PM'
                 },
                 rating: 4.7,
                 reviews: 189,
-                localSpecial: 'Misal Pav on Saturday'
+                localSpecial: 'Misal Pav on Saturday',
+                prepTime: '25-35 min'
             },
             {
                 id: 4,
@@ -950,18 +1611,22 @@
                 type: 'professional',
                 category: 'non-veg',
                 price: 3000,
+                oneTimePrice: 85,
                 duration: 'month',
                 lunch: {
                     items: ['3 Chapati', '1 Veg Sabji', 'Chicken/Egg Curry', 'Dal', 'Rice'],
-                    image: '🍗'
+                    image: '🍗',
+                    cutoff: '11:30 AM'
                 },
                 dinner: {
                     items: ['3 Chapati', '2 Veg Sabji', 'Egg Bhurji', 'Rice'],
-                    image: '🍳'
+                    image: '🍳',
+                    cutoff: '7:00 PM'
                 },
                 rating: 4.8,
                 reviews: 167,
-                localSpecial: 'Chicken Thali on Sunday'
+                localSpecial: 'Chicken Thali on Sunday',
+                prepTime: '40-50 min'
             },
             {
                 id: 5,
@@ -970,17 +1635,21 @@
                 type: 'student',
                 category: 'veg',
                 price: 1700,
+                oneTimePrice: 65,
                 duration: 'month',
                 lunch: {
                     items: ['2 Chapati', '1 Sabji', 'Dal', 'Rice', 'Papad'],
-                    image: '🍛'
+                    image: '🍛',
+                    cutoff: '12:00 PM'
                 },
                 dinner: {
                     items: ['2 Chapati', '1 Sabji', 'Dal/Rice', 'Salad'],
-                    image: '🍲'
+                    image: '🍲',
+                    cutoff: '7:30 PM'
                 },
                 rating: 4.6,
-                reviews: 312
+                reviews: 312,
+                prepTime: '30-40 min'
             },
             {
                 id: 6,
@@ -989,22 +1658,26 @@
                 type: 'professional',
                 category: 'non-veg',
                 price: 2800,
+                oneTimePrice: 80,
                 duration: 'month',
                 lunch: {
                     items: ['3 Chapati', '1 Veg Sabji', 'Chicken Curry', 'Dal', 'Rice'],
-                    image: '🍗'
+                    image: '🍗',
+                    cutoff: '11:15 AM'
                 },
                 dinner: {
                     items: ['3 Chapati', '2 Veg Sabji', 'Egg Curry', 'Rice'],
-                    image: '🍳'
+                    image: '🍳',
+                    cutoff: '6:45 PM'
                 },
                 rating: 4.9,
                 reviews: 201,
-                localSpecial: 'Mutton on Sunday (extra cost)'
+                localSpecial: 'Mutton on Sunday (extra cost)',
+                prepTime: '35-45 min'
             }
         ];
 
-        // Weekly Menu Data - Nashik Style
+        // Weekly Menu Data
         const weeklyMenu = [
             {
                 day: 'Monday',
@@ -1050,7 +1723,7 @@
             }
         ];
 
-        // Providers Data - Nashik
+        // Providers Data
         const providers = [
             {
                 name: 'Matoshree Tiffin',
@@ -1082,9 +1755,116 @@
             }
         ];
 
-        // Load Tiffins with Menu Images
+        // ==================== STATE VARIABLES ====================
+        let selectedTiffin = null;
+        let selectedMealType = null;
+        let selectedDay = 'today';
+        let selectedPrice = 0;
+        let selectedCustomizations = [];
+        const extraPrices = {
+            'extra-roti': 10,
+            'extra-rice': 15,
+            'extra-sabji': 20
+        };
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function getCurrentTimeSlot() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentTime = hours * 60 + minutes;
+            
+            const lunchCutoff = 11 * 60 + 30;
+            const dinnerCutoff = 19 * 60;
+            
+            let warning = '';
+            
+            if (currentTime < lunchCutoff) {
+                const minsLeft = lunchCutoff - currentTime;
+                warning = `⏰ Order within ${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m for lunch`;
+                document.getElementById('lunchSlot').classList.add('active');
+                document.getElementById('dinnerSlot').classList.remove('active');
+            } else if (currentTime < dinnerCutoff) {
+                const minsLeft = dinnerCutoff - currentTime;
+                warning = `⏰ Order within ${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m for dinner`;
+                document.getElementById('lunchSlot').classList.remove('active');
+                document.getElementById('dinnerSlot').classList.add('active');
+            } else {
+                warning = `🌙 Dinner cutoff passed. Order for tomorrow's lunch`;
+                document.getElementById('lunchSlot').classList.remove('active');
+                document.getElementById('dinnerSlot').classList.remove('active');
+            }
+            
+            document.getElementById('cutoffWarning').innerHTML = `<i class="fas fa-clock"></i> ${warning}`;
+        }
+
+        function canOrderNow(mealType, cutoffTime) {
+            const now = new Date();
+            const [hours, minutes] = cutoffTime.split(':').map(Number);
+            const cutoff = hours * 60 + minutes;
+            const current = now.getHours() * 60 + now.getMinutes();
+            
+            return current < cutoff;
+        }
+
+        function calculateTotalPrice(basePrice) {
+            let total = basePrice;
+            selectedCustomizations.forEach(custom => {
+                if (extraPrices[custom]) {
+                    total += extraPrices[custom];
+                }
+            });
+            return total;
+        }
+
+        function updatePriceDisplay() {
+            if (!selectedMealType || !selectedTiffin) return;
+            
+            const basePrice = selectedMealType === 'both' ? selectedTiffin.oneTimePrice * 2 : selectedTiffin.oneTimePrice;
+            const totalPrice = calculateTotalPrice(basePrice);
+            
+            const confirmBtn = document.getElementById('confirmOrderBtn');
+            const confirmBtnText = document.getElementById('confirmBtnText');
+            
+            confirmBtn.disabled = false;
+            
+            let mealText = selectedMealType === 'lunch' ? 'Lunch' : (selectedMealType === 'dinner' ? 'Dinner' : 'Both Meals');
+            confirmBtnText.innerHTML = `Order ${mealText} for ${selectedDay === 'today' ? 'Today' : 'Tomorrow'} • ₹${totalPrice}`;
+            
+            const priceBreakdown = document.getElementById('priceBreakdown');
+            if (priceBreakdown) {
+                let extrasTotal = 0;
+                let extrasHtml = '';
+                
+                selectedCustomizations.filter(c => extraPrices[c]).forEach(c => {
+                    const name = c === 'extra-roti' ? 'Extra Roti' : (c === 'extra-rice' ? 'Extra Rice' : 'Extra Sabji');
+                    extrasTotal += extraPrices[c];
+                    extrasHtml += `
+                        <div class="price-row">
+                            <span>+ ${name}</span>
+                            <span>+₹${extraPrices[c]}</span>
+                        </div>
+                    `;
+                });
+                
+                priceBreakdown.innerHTML = `
+                    <div class="price-row">
+                        <span>Base Price (${mealText})</span>
+                        <span>₹${basePrice}</span>
+                    </div>
+                    ${extrasHtml}
+                    <div class="price-row total">
+                        <span>Total Amount</span>
+                        <span>₹${totalPrice}</span>
+                    </div>
+                `;
+            }
+        }
+
+        // ==================== LOADING FUNCTIONS ====================
         function loadTiffins(filter = 'all') {
             const grid = document.getElementById('tiffinGrid');
+            getCurrentTimeSlot();
             
             let filteredTiffins = tiffins;
             
@@ -1098,7 +1878,12 @@
                 filteredTiffins = tiffins.filter(t => t.category === 'non-veg');
             }
 
-            grid.innerHTML = filteredTiffins.map(tiffin => `
+            grid.innerHTML = filteredTiffins.map(tiffin => {
+                const canOrderLunch = canOrderNow('lunch', tiffin.lunch.cutoff);
+                const canOrderDinner = canOrderNow('dinner', tiffin.dinner.cutoff);
+                const canOrderNow_ = canOrderLunch || canOrderDinner;
+                
+                return `
                 <div class="tiffin-card">
                     <div class="tiffin-header">
                         <div class="tiffin-type">
@@ -1109,16 +1894,21 @@
                         </div>
                     </div>
                     <div class="tiffin-body">
-                        <h3 style="margin-bottom: 0.5rem;">${tiffin.name}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3>${tiffin.name}</h3>
+                            ${canOrderNow_ ? 
+                                '<span class="availability-badge available-now"><i class="fas fa-bolt"></i> Available Now</span>' : 
+                                '<span class="availability-badge available-later"><i class="fas fa-clock"></i> Pre-order</span>'}
+                        </div>
                         <p style="color: #666; margin-bottom: 1rem;">
                             <i class="fas fa-map-marker-alt" style="color: #ff6b6b;"></i> ${tiffin.area}, Nashik
+                            <span style="margin-left: 1rem;"><i class="fas fa-clock" style="color: #ff6b6b;"></i> ${tiffin.prepTime}</span>
                         </p>
                         
-                        <!-- Menu Images Showcase -->
                         <div class="menu-showcase">
                             <div class="menu-image-card">
                                 <div class="time-icon"><i class="fas fa-sun"></i></div>
-                                <h4>Lunch Menu</h4>
+                                <h4>Lunch Menu <small style="color: #999;">(Order by ${tiffin.lunch.cutoff})</small></h4>
                                 <div class="food-items">
                                     ${tiffin.lunch.items.map(item => `
                                         <span class="food-item-badge">
@@ -1126,17 +1916,23 @@
                                         </span>
                                     `).join('')}
                                 </div>
+                                <div style="margin-top: 0.5rem; color: #fc8019; font-weight: 600;">
+                                    One-time: ₹${tiffin.oneTimePrice}
+                                </div>
                             </div>
                             
                             <div class="menu-image-card">
                                 <div class="time-icon"><i class="fas fa-moon"></i></div>
-                                <h4>Dinner Menu</h4>
+                                <h4>Dinner Menu <small style="color: #999;">(Order by ${tiffin.dinner.cutoff})</small></h4>
                                 <div class="food-items">
                                     ${tiffin.dinner.items.map(item => `
                                         <span class="food-item-badge">
                                             <i class="fas fa-utensils"></i> ${item}
                                         </span>
                                     `).join('')}
+                                </div>
+                                <div style="margin-top: 0.5rem; color: #fc8019; font-weight: 600;">
+                                    One-time: ₹${tiffin.oneTimePrice}
                                 </div>
                             </div>
                         </div>
@@ -1155,21 +1951,22 @@
                         </div>
                     </div>
                     <div class="tiffin-footer">
-                        <button class="btn-subscribe" onclick="subscribe('${tiffin.id}')">
-                            Subscribe Now
+                        <button class="btn-subscribe" onclick="subscribe(${tiffin.id})">
+                            <i class="fas fa-calendar-check"></i> Subscribe
                         </button>
-                        <button class="btn-preview" onclick="previewMenu('${tiffin.id}')">
-                            Preview
+                        <button class="btn-order-now" onclick="orderNow(${tiffin.id})">
+                            <i class="fas fa-bolt"></i> Order Now • ₹${tiffin.oneTimePrice}
+                        </button>
+                        <button class="btn-preview" onclick="previewMenu(${tiffin.id})">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        // Load Weekly Menu with Icons
         function loadWeeklyMenu() {
             const grid = document.getElementById('weeklyMenu');
-            
             grid.innerHTML = weeklyMenu.map(day => `
                 <div class="day-card">
                     <div class="day-name">
@@ -1184,10 +1981,8 @@
             `).join('');
         }
 
-        // Load Providers
         function loadProviders() {
             const grid = document.getElementById('providersGrid');
-            
             grid.innerHTML = providers.map(provider => `
                 <div class="provider-card">
                     <div class="provider-icon">${provider.icon}</div>
@@ -1203,7 +1998,7 @@
             `).join('');
         }
 
-        // Filter Tiffins
+        // ==================== FILTER FUNCTIONS ====================
         window.filterTiffins = function(filter) {
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -1212,10 +2007,8 @@
             loadTiffins(filter);
         };
 
-        // Search by Nashik area
         window.searchTiffins = function() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
             const filtered = tiffins.filter(t => 
                 t.name.toLowerCase().includes(searchTerm) ||
                 t.area.toLowerCase().includes(searchTerm)
@@ -1226,7 +2019,12 @@
             if (filtered.length === 0) {
                 grid.innerHTML = '<p style="text-align: center; padding: 2rem;">No tiffin services found in this area of Nashik</p>';
             } else {
-                grid.innerHTML = filtered.map(tiffin => `
+                grid.innerHTML = filtered.map(tiffin => {
+                    const canOrderLunch = canOrderNow('lunch', tiffin.lunch.cutoff);
+                    const canOrderDinner = canOrderNow('dinner', tiffin.dinner.cutoff);
+                    const canOrderNow_ = canOrderLunch || canOrderDinner;
+                    
+                    return `
                     <div class="tiffin-card">
                         <div class="tiffin-header">
                             <div class="tiffin-type">
@@ -1237,7 +2035,12 @@
                             </div>
                         </div>
                         <div class="tiffin-body">
-                            <h3 style="margin-bottom: 0.5rem;">${tiffin.name}</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <h3>${tiffin.name}</h3>
+                                ${canOrderNow_ ? 
+                                    '<span class="availability-badge available-now"><i class="fas fa-bolt"></i> Available Now</span>' : 
+                                    '<span class="availability-badge available-later"><i class="fas fa-clock"></i> Pre-order</span>'}
+                            </div>
                             <p style="color: #666; margin-bottom: 1rem;">
                                 <i class="fas fa-map-marker-alt" style="color: #ff6b6b;"></i> ${tiffin.area}, Nashik
                             </p>
@@ -1264,11 +2067,12 @@
                             </div>
                         </div>
                         <div class="tiffin-footer">
-                            <button class="btn-subscribe" onclick="subscribe('${tiffin.id}')">Subscribe</button>
-                            <button class="btn-preview" onclick="previewMenu('${tiffin.id}')">Preview</button>
+                            <button class="btn-subscribe" onclick="subscribe(${tiffin.id})">Subscribe</button>
+                            <button class="btn-order-now" onclick="orderNow(${tiffin.id})">Order Now • ₹${tiffin.oneTimePrice}</button>
+                            <button class="btn-preview" onclick="previewMenu(${tiffin.id})">Preview</button>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
         };
 
@@ -1288,7 +2092,12 @@
                     if (filtered.length === 0) {
                         grid.innerHTML = `<p style="text-align: center; padding: 2rem;">No tiffin services in ${area} yet</p>`;
                     } else {
-                        grid.innerHTML = filtered.map(tiffin => `
+                        grid.innerHTML = filtered.map(tiffin => {
+                            const canOrderLunch = canOrderNow('lunch', tiffin.lunch.cutoff);
+                            const canOrderDinner = canOrderNow('dinner', tiffin.dinner.cutoff);
+                            const canOrderNow_ = canOrderLunch || canOrderDinner;
+                            
+                            return `
                             <div class="tiffin-card">
                                 <div class="tiffin-header">
                                     <div class="tiffin-type">
@@ -1299,7 +2108,12 @@
                                     </div>
                                 </div>
                                 <div class="tiffin-body">
-                                    <h3 style="margin-bottom: 0.5rem;">${tiffin.name}</h3>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <h3>${tiffin.name}</h3>
+                                        ${canOrderNow_ ? 
+                                            '<span class="availability-badge available-now"><i class="fas fa-bolt"></i> Available Now</span>' : 
+                                            '<span class="availability-badge available-later"><i class="fas fa-clock"></i> Pre-order</span>'}
+                                    </div>
                                     <p style="color: #666; margin-bottom: 1rem;">
                                         <i class="fas fa-map-marker-alt" style="color: #ff6b6b;"></i> ${tiffin.area}, Nashik
                                     </p>
@@ -1325,73 +2139,350 @@
                                     </div>
                                 </div>
                                 <div class="tiffin-footer">
-                                    <button class="btn-subscribe" onclick="subscribe('${tiffin.id}')">Subscribe</button>
-                                    <button class="btn-preview" onclick="previewMenu('${tiffin.id}')">Preview</button>
+                                    <button class="btn-subscribe" onclick="subscribe(${tiffin.id})">Subscribe</button>
+                                    <button class="btn-order-now" onclick="orderNow(${tiffin.id})">Order Now • ₹${tiffin.oneTimePrice}</button>
+                                    <button class="btn-preview" onclick="previewMenu(${tiffin.id})">Preview</button>
                                 </div>
                             </div>
-                        `).join('');
+                        `}).join('');
                     }
                 }
             });
         });
 
-        // Subscribe
-       // Subscribe - Save to localStorage and go to payment
-window.subscribe = function(id) {
-    const tiffin = tiffins.find(t => t.id == id);
-    
-    // Create subscription object with ALL details
-    const subscription = {
-        id: tiffin.id,
-        name: tiffin.name,
-        provider: tiffin.name,
-        area: tiffin.area,
-        price: tiffin.price,
-        duration: tiffin.duration || 'month',
-        planType: tiffin.type === 'student' ? 'Student Plan' : 'Professional Plan',
-        category: tiffin.category,
-        type: tiffin.type,
-        mealsPerDay: 2,
-        deliveryTime: '12:00 PM & 7:30 PM',
-        menu: [...tiffin.lunch.items, ...tiffin.dinner.items.slice(0, 2)],
-        special: tiffin.localSpecial || '',
-        icon: '🍛',
-        // Payment related
-        amount: tiffin.price,
-        gst: Math.round(tiffin.price * 0.05), // 5% GST
-        totalAmount: tiffin.price + Math.round(tiffin.price * 0.05),
-        // Dates
-        startDate: new Date().toLocaleDateString('en-IN', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        }),
-        // Status
-        status: 'pending_payment',
-        paymentStatus: 'pending'
-    };
-    
-    // Save to localStorage
-    localStorage.setItem('pendingSubscription', JSON.stringify(subscription));
-    
-    // Show alert
-    alert(`✅ Proceeding to payment for ${tiffin.name}...`);
-    
-    // Redirect to payments page
-    window.location.href = 'payments.html';
-};
-// Show alert function (optional - instead of alert)
-function showAlert(message, type) {
-    // You can use this if you have an alert container
-    alert(message); // Simple alert for now
-}
-
-        // Preview Menu
-        window.previewMenu = function(id) {
-            alert('📋 Full weekly menu will be shown here with Nashik special items!');
+        // ==================== MAIN FUNCTIONS ====================
+        window.subscribe = function(id) {
+            const tiffin = tiffins.find(t => t.id == id);
+            
+            const subscription = {
+                id: tiffin.id,
+                name: tiffin.name,
+                provider: tiffin.name,
+                area: tiffin.area,
+                price: tiffin.price,
+                duration: tiffin.duration || 'month',
+                planType: tiffin.type === 'student' ? 'Student Plan' : 'Professional Plan',
+                category: tiffin.category,
+                type: tiffin.type,
+                mealsPerDay: 2,
+                deliveryTime: '12:00 PM & 7:30 PM',
+                menu: [...tiffin.lunch.items, ...tiffin.dinner.items.slice(0, 2)],
+                special: tiffin.localSpecial || '',
+                icon: '🍛',
+                amount: tiffin.price,
+                gst: Math.round(tiffin.price * 0.05),
+                totalAmount: tiffin.price + Math.round(tiffin.price * 0.05),
+                startDate: new Date().toLocaleDateString('en-IN', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                }),
+                status: 'pending_payment',
+                paymentStatus: 'pending'
+            };
+            
+            localStorage.setItem('pendingSubscription', JSON.stringify(subscription));
+            showAlert(`✅ Proceeding to payment for ${tiffin.name} subscription...`, 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'payments.html';
+            }, 1500);
         };
 
-        // Logout
+        window.orderNow = function(id) {
+            console.log('✅ Order Now clicked for ID:', id);
+            const tiffin = tiffins.find(t => t.id == id);
+            console.log('✅ Tiffin found:', tiffin);
+            
+            selectedTiffin = tiffin;
+            selectedDay = 'today';
+            selectedMealType = null;
+            selectedCustomizations = [];
+            
+            // Reset day tabs
+            document.querySelectorAll('.day-tab')[0].classList.add('active');
+            document.querySelectorAll('.day-tab')[1].classList.remove('active');
+            
+            showEnhancedMealModal(tiffin);
+        };
+
+        function showEnhancedMealModal(tiffin) {
+            console.log('✅ Showing modal for:', tiffin.name);
+            const modalContent = document.getElementById('mealModalContent');
+            
+            const canOrderLunch = canOrderNow('lunch', tiffin.lunch.cutoff);
+            const canOrderDinner = canOrderNow('dinner', tiffin.dinner.cutoff);
+            const isToday = selectedDay === 'today';
+            
+            modalContent.innerHTML = `
+                <div class="tiffin-info-card">
+                    <div class="tiffin-icon-large">${tiffin.lunch.image || '🍛'}</div>
+                    <div class="tiffin-details-compact">
+                        <h3>${tiffin.name}</h3>
+                        <p>
+                            <span><i class="fas fa-map-marker-alt"></i> ${tiffin.area}, Nashik</span>
+                            <span><i class="fas fa-clock"></i> ${tiffin.prepTime}</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="meal-options-grid">
+                    <!-- Lunch Option -->
+                    <div class="meal-card ${isToday && !canOrderLunch ? 'disabled' : ''}" onclick="selectMeal('lunch', ${tiffin.oneTimePrice})">
+                        ${isToday && !canOrderLunch ? '<span class="cutoff-badge">Cutoff passed</span>' : ''}
+                        <div class="meal-icon"><i class="fas fa-sun"></i></div>
+                        <h4>Lunch ${selectedDay === 'today' ? 'Today' : 'Tomorrow'}</h4>
+                        <span class="delivery-tag"><i class="fas fa-clock"></i> Delivery by 12:00-12:30 PM</span>
+                        <ul class="meal-items-list">
+                            ${tiffin.lunch.items.map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
+                        </ul>
+                        <div class="meal-price-row">
+                            <div>
+                                <span class="meal-price">₹${tiffin.oneTimePrice}</span>
+                                <small>/meal</small>
+                            </div>
+                            ${isToday && canOrderLunch ? '<span class="available-now-badge"><i class="fas fa-bolt"></i> Available Now</span>' : ''}
+                            ${!isToday ? '<span class="available-now-badge"><i class="fas fa-calendar-plus"></i> Pre-order</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Dinner Option -->
+                    <div class="meal-card ${isToday && !canOrderDinner ? 'disabled' : ''}" onclick="selectMeal('dinner', ${tiffin.oneTimePrice})">
+                        ${isToday && !canOrderDinner ? '<span class="cutoff-badge">Cutoff passed</span>' : ''}
+                        <div class="meal-icon"><i class="fas fa-moon"></i></div>
+                        <h4>Dinner ${selectedDay === 'today' ? 'Today' : 'Tomorrow'}</h4>
+                        <span class="delivery-tag"><i class="fas fa-clock"></i> Delivery by 7:30-8:00 PM</span>
+                        <ul class="meal-items-list">
+                            ${tiffin.dinner.items.map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
+                        </ul>
+                        <div class="meal-price-row">
+                            <div>
+                                <span class="meal-price">₹${tiffin.oneTimePrice}</span>
+                                <small>/meal</small>
+                            </div>
+                            ${isToday && canOrderDinner ? '<span class="available-now-badge"><i class="fas fa-bolt"></i> Available Now</span>' : ''}
+                            ${!isToday ? '<span class="available-now-badge"><i class="fas fa-calendar-plus"></i> Pre-order</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Both Meals Option -->
+                    <div class="meal-card" style="grid-column: span 2;" onclick="selectMeal('both', ${tiffin.oneTimePrice * 2})">
+                        <div class="meal-icon"><i class="fas fa-utensils"></i></div>
+                        <h4>Both Meals ${selectedDay === 'today' ? 'Today' : 'Tomorrow'}</h4>
+                        <span class="delivery-tag"><i class="fas fa-clock"></i> Lunch 12:00 PM • Dinner 7:30 PM</span>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                            <div>
+                                <strong>Lunch:</strong>
+                                <ul class="meal-items-list">
+                                    ${tiffin.lunch.items.slice(0, 2).map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
+                                    <li><small>+${tiffin.lunch.items.length - 2} more</small></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <strong>Dinner:</strong>
+                                <ul class="meal-items-list">
+                                    ${tiffin.dinner.items.slice(0, 2).map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
+                                    <li><small>+${tiffin.dinner.items.length - 2} more</small></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="meal-price-row">
+                            <span class="meal-price">₹${tiffin.oneTimePrice * 2}</span>
+                            <small>for both meals</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="customization-section">
+                    <div class="customization-title">
+                        <i class="fas fa-sliders-h"></i> Customize Your Meal
+                    </div>
+                    <div class="customization-options">
+                        <span class="custom-option" onclick="toggleCustomization('extra-roti')">
+                            Extra Roti <span class="extra-price">+₹10</span>
+                        </span>
+                        <span class="custom-option" onclick="toggleCustomization('extra-rice')">
+                            Extra Rice <span class="extra-price">+₹15</span>
+                        </span>
+                        <span class="custom-option" onclick="toggleCustomization('extra-sabji')">
+                            Extra Sabji <span class="extra-price">+₹20</span>
+                        </span>
+                        <span class="custom-option" onclick="toggleCustomization('no-onion')">
+                            No Onion/Garlic
+                        </span>
+                        <span class="custom-option" onclick="toggleCustomization('less-spicy')">
+                            Less Spicy
+                        </span>
+                        <span class="custom-option" onclick="toggleCustomization('more-spicy')">
+                            More Spicy
+                        </span>
+                    </div>
+                    <textarea class="special-request" id="specialRequest" placeholder="Any special requests? (e.g., extra curd, less oil, etc.)" rows="2"></textarea>
+                </div>
+                
+                <div class="price-breakdown" id="priceBreakdown">
+                    <div class="price-row">
+                        <span>Select a meal to see price</span>
+                        <span>₹0</span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeMealModal()">Cancel</button>
+                    <button class="btn-confirm-order" id="confirmOrderBtn" disabled onclick="confirmOrder()">
+                        <i class="fas fa-shopping-bag"></i> <span id="confirmBtnText">Select a meal</span>
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('mealModal').style.display = 'block';
+        }
+
+        window.selectDay = function(day) {
+            console.log('✅ Day selected:', day);
+            selectedDay = day;
+            document.querySelectorAll('.day-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            selectedMealType = null;
+            selectedCustomizations = [];
+            
+            if (selectedTiffin) {
+                showEnhancedMealModal(selectedTiffin);
+            }
+        };
+
+        window.selectMeal = function(type, price) {
+            console.log('✅ Meal selected:', type, price);
+            
+            selectedMealType = type;
+            selectedPrice = price;
+            
+            document.querySelectorAll('.meal-card').forEach(card => {
+                card.classList.remove('selected');
+                card.style.borderColor = '#f0f0f0';
+                card.style.background = 'white';
+            });
+            
+            const clickedCard = event.currentTarget;
+            clickedCard.classList.add('selected');
+            clickedCard.style.borderColor = '#fc8019';
+            clickedCard.style.background = '#fff5f0';
+            
+            updatePriceDisplay();
+        };
+
+        window.toggleCustomization = function(option) {
+            console.log('✅ Toggle customization:', option);
+            const element = event.currentTarget;
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedCustomizations = selectedCustomizations.filter(item => item !== option);
+            } else {
+                element.classList.add('selected');
+                selectedCustomizations.push(option);
+            }
+            
+            if (selectedMealType) {
+                updatePriceDisplay();
+            }
+        };
+
+        window.confirmOrder = function() {
+            console.log('✅ Confirm Order clicked');
+            console.log('Selected meal type:', selectedMealType);
+            console.log('Selected tiffin:', selectedTiffin);
+            
+            if (!selectedMealType || !selectedTiffin) {
+                showAlert('Please select a meal first', 'error');
+                return;
+            }
+            
+            const specialRequest = document.getElementById('specialRequest')?.value || '';
+            
+            const basePrice = selectedMealType === 'both' ? selectedTiffin.oneTimePrice * 2 : selectedTiffin.oneTimePrice;
+            const totalPrice = calculateTotalPrice(basePrice);
+            
+            const order = {
+                id: 'ORD' + Date.now(),
+                tiffinId: selectedTiffin.id,
+                name: selectedTiffin.name,
+                area: selectedTiffin.area,
+                mealType: selectedMealType,
+                day: selectedDay,
+                basePrice: basePrice,
+                price: totalPrice,
+                customizations: selectedCustomizations,
+                specialRequest: specialRequest,
+                icon: selectedTiffin.lunch.image || '🍛',
+                date: selectedDay === 'today' ? new Date().toLocaleDateString('en-IN') : 
+                       new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-IN'),
+                deliveryTime: selectedMealType === 'lunch' ? '12:00 PM' : (selectedMealType === 'dinner' ? '7:30 PM' : '12:00 PM & 7:30 PM'),
+                menu: selectedMealType === 'lunch' ? selectedTiffin.lunch.items : (selectedMealType === 'dinner' ? selectedTiffin.dinner.items : [...selectedTiffin.lunch.items, ...selectedTiffin.dinner.items]),
+                status: 'pending_payment',
+                paymentStatus: 'pending',
+                amount: totalPrice,
+                gst: Math.round(totalPrice * 0.05),
+                totalAmount: totalPrice + Math.round(totalPrice * 0.05),
+                orderType: 'instant',
+                prepTime: selectedTiffin.prepTime
+            };
+            
+            console.log('✅ Order created:', order);
+            
+            localStorage.setItem('pendingOrder', JSON.stringify(order));
+            showAlert(`✅ Proceeding to payment for your ${selectedMealType} order...`, 'success');
+            
+            closeMealModal();
+            
+            setTimeout(() => {
+                window.location.href = 'order-payment.html';
+            }, 1500);
+        };
+
+        window.closeMealModal = function() {
+            console.log('✅ Closing modal');
+            document.getElementById('mealModal').style.display = 'none';
+            selectedTiffin = null;
+            selectedMealType = null;
+            selectedPrice = 0;
+            selectedCustomizations = [];
+        };
+
+        window.previewMenu = function(id) {
+            const tiffin = tiffins.find(t => t.id == id);
+            showAlert(`📋 Today's special: ${tiffin.localSpecial || 'Nashik special items!'}`, 'info');
+        };
+
+        function showAlert(message, type) {
+            console.log('✅ Alert:', message, type);
+            const alertContainer = document.getElementById('alertContainer');
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+            
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas ${icons[type]}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 3000);
+        }
+
+        // ==================== INITIALIZATION ====================
+        setInterval(() => {
+            getCurrentTimeSlot();
+            loadTiffins('all');
+        }, 60000);
+
         document.getElementById('logoutBtn').addEventListener('click', function(e) {
             e.preventDefault();
             localStorage.clear();
@@ -1400,6 +2491,7 @@ function showAlert(message, type) {
         });
 
         // Initialize
+        getCurrentTimeSlot();
         loadTiffins('all');
         loadWeeklyMenu();
         loadProviders();
