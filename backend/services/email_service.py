@@ -525,22 +525,15 @@ class EmailService:
         """
         
         return self.send_email(email, subject, html_content)
-<<<<<<< HEAD
-        def send_password_reset(self, email, reset_link):
-                subject = "Reset Your Password - Dabba's"
-                html_content = f"""
-                <html>
-=======
-    
+
     def send_password_reset(self, email: str, reset_link: str):
         """Send password reset email"""
         subject = "Reset Your Password - Dabba's"
         html_content = f"""
         <html>
->>>>>>> d2a701b604f36f5b1954b33cfb7dbe28852b91a1
             <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <div style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e); padding: 20px; text-align: center;">
-                    <h1 style="color: white; margin: 0;">Dabba's</h1>
+                    <h1 style="color: white; margin: 0;">Dabba\'s</h1>
                 </div>
                 <div style="padding: 20px;">
                     <h2>Reset Your Password</h2>
@@ -554,9 +547,9 @@ class EmailService:
                     <p>This link will expire in 24 hours.</p>
                     <p>If you didn't request this, please ignore this email.</p>
                     <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                    <p style="color: #999; font-size: 12px;">&copy; 2025 Dabba's. All rights reserved.</p>
+                    <p style="color: #999; font-size: 12px;">&copy; 2025 Dabba\'s. All rights reserved.</p>
                 </div>
             </body>
         </html>
         """
-                return self.send_email(email, subject, html_content)
+        return self.send_email(email, subject, html_content)

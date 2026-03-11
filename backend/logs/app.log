@@ -772,3 +772,63 @@
 2026-02-27 01:54:00,652 - werkzeug - INFO - 127.0.0.1 - - [27/Feb/2026 01:54:00] "OPTIONS /api/customer/orders?limit=3 HTTP/1.1" 200 -
 2026-02-27 01:54:00,969 - werkzeug - INFO - 127.0.0.1 - - [27/Feb/2026 01:54:00] "OPTIONS /api/customer/subscriptions HTTP/1.1" 200 -
 >>>>>>> d2a701b604f36f5b1954b33cfb7dbe28852b91a1
+2026-03-09 15:55:50,204 - services.recommendation - ERROR - Error loading meals from database: Execution failed on sql '
+                SELECT * FROM menu_items 
+                WHERE is_available = 1
+            ': no such table: menu_items
+2026-03-09 15:55:50,208 - services.recommendation - INFO - Created 10 sample meals
+2026-03-09 15:55:50,210 - services.recommendation - ERROR - Error loading ratings from database: Execution failed on sql '
+                SELECT user_id, meal_id, rating 
+                FROM user_ratings
+            ': no such table: user_ratings
+2026-03-09 15:55:50,214 - services.recommendation - INFO - Recommendation Engine initialized
+2026-03-09 15:55:50,220 - services.email_service - INFO - Email Service initialized (Development Mode)
+2026-03-09 15:55:50,220 - services.sms_service - INFO - SMS Service initialized (Development Mode)
+2026-03-09 16:01:46,640 - services.recommendation - ERROR - Error loading meals from database: Execution failed on sql '
+                SELECT * FROM menu_items 
+                WHERE is_available = 1
+            ': no such table: menu_items
+2026-03-09 16:01:46,643 - services.recommendation - INFO - Created 10 sample meals
+2026-03-09 16:01:46,644 - services.recommendation - ERROR - Error loading ratings from database: Execution failed on sql '
+                SELECT user_id, meal_id, rating 
+                FROM user_ratings
+            ': no such table: user_ratings
+2026-03-09 16:01:46,648 - services.recommendation - INFO - Recommendation Engine initialized
+2026-03-09 16:01:46,654 - services.email_service - INFO - Email Service initialized (Development Mode)
+2026-03-09 16:01:46,654 - services.sms_service - INFO - SMS Service initialized (Development Mode)
+2026-03-09 16:03:32,944 - services.recommendation - ERROR - Error loading meals from database: Execution failed on sql '
+                SELECT * FROM menu_items 
+                WHERE is_available = 1
+            ': no such table: menu_items
+2026-03-09 16:03:32,945 - services.recommendation - INFO - Created 10 sample meals
+2026-03-09 16:03:32,945 - services.recommendation - ERROR - Error loading ratings from database: Execution failed on sql '
+                SELECT user_id, meal_id, rating 
+                FROM user_ratings
+            ': no such table: user_ratings
+2026-03-09 16:03:32,946 - services.recommendation - INFO - Recommendation Engine initialized
+2026-03-09 16:03:32,952 - services.email_service - INFO - Email Service initialized (Development Mode)
+2026-03-09 16:03:32,952 - services.sms_service - INFO - SMS Service initialized (Development Mode)
+2026-03-09 16:27:24,252 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-09 16:27:24,253 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-09 16:29:12,159 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 16:29:12] "GET /api/test HTTP/1.1" 200 -
+2026-03-09 16:29:12,265 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 16:29:12] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-09 16:29:22,563 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 16:29:22] "GET /api/health HTTP/1.1" 200 -
+2026-03-09 23:14:22,488 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-09 23:14:22,489 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-09 23:21:17,907 - app - INFO - Database initialized successfully
+2026-03-09 23:21:17,908 - app - INFO - Recommendation Engine initialized successfully
+2026-03-09 23:21:17,937 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-09 23:21:17,938 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-09 23:36:43,124 - app - INFO - Database initialized successfully
+2026-03-09 23:36:43,124 - app - INFO - Recommendation Engine initialized successfully
+2026-03-09 23:36:43,150 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-09 23:36:43,150 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-09 23:39:54,760 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 23:39:54] "GET / HTTP/1.1" 200 -
+2026-03-09 23:39:54,771 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 23:39:54] "GET / HTTP/1.1" 200 -
+2026-03-09 23:39:54,774 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 23:39:54] "GET /api/health HTTP/1.1" 200 -
+2026-03-09 23:39:54,777 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 23:39:54] "GET /api/test HTTP/1.1" 200 -
+2026-03-09 23:39:54,788 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2026 23:39:54] "GET /api/cities HTTP/1.1" 200 -

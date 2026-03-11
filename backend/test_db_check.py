@@ -1,42 +1,28 @@
-import os
-import sqlite3
+# test_db_check.py
+import os  # ← Add this missing import!
+from app import app
+from database import db
 
-# Check if the database exists
-db_path = r'C:\Users\PRANJAL\dabbas-complete-platform\backend\database\dabbas.db'
-print(f"Database exists: {os.path.exists(db_path)}")
-print(f"Database path: {db_path}")
+print("Testing database connection...")
+print(f"Database path: {db.db_path}")
+print(f"Database exists: {os.path.exists(db.db_path)}")
 
-if os.path.exists(db_path):
-    print(f"File size: {os.path.getsize(db_path)} bytes")
-    
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+try:
+    conn = db.get_connection()
+    print("✅ Successfully connected to database!")
     
     # List all tables
+    cursor = conn.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
-    print("\n📋 Tables in database:")
+    
+    print(f"\n📋 Tables in database ({len(tables)}):")
     for table in tables:
-        print(f"  - {table[0]}")
-    
-    # Check users table specifically
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
-    table = cursor.fetchone()
-    print(f"\n👤 Users table exists: {table is not None}")
-    
-    if table:
-        # Show users table structure
-        cursor.execute("PRAGMA table_info(users);")
-        columns = cursor.fetchall()
-        print("\n📊 Users table columns:")
-        for col in columns:
-            print(f"  - {col[1]} ({col[2]})")
-        
-        # Count users
-        cursor.execute("SELECT COUNT(*) FROM users")
+        cursor.execute(f"SELECT COUNT(*) FROM {table[0]}")
         count = cursor.fetchone()[0]
-        print(f"\n👥 Total users: {count}")
+        print(f"   - {table[0]}: {count} records")
     
     conn.close()
-else:
-    print("❌ Database file does not exist!")
+    
+except Exception as e:
+    print(f"❌ Error: {e}")
