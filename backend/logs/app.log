@@ -1903,3 +1903,7 @@
 2026-03-14 00:43:27,133 - __main__ - INFO - ============================================================
 2026-03-14 00:43:27,149 - werkzeug - WARNING -  * Debugger is active!
 2026-03-14 00:43:27,154 - werkzeug - INFO -  * Debugger PIN: 729-223-125
+2026-03-14 00:51:48,082 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2026 00:51:48] "OPTIONS /api/provider/register HTTP/1.1" 200 -
+2026-03-14 00:51:48,100 - api.provider - INFO - Registration received for email: nachiketkondawar98@gmail.com
+2026-03-14 00:51:48,287 - api.provider - INFO - Provider registered with ID: c560d2c1-9157-4195-bf16-df0b50f19783
+2026-03-14 00:51:48,289 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2026 00:51:48] "[35m[1mPOST /api/provider/register HTTP/1.1[0m" 201 -
