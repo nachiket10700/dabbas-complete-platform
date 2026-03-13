@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Management - Dabba's Tiffin Service</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        /* Copy ALL styles from your original dashboard */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .date-time {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box i {
+            color: #999;
+            margin-right: 0.5rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b6b;
+        }
+
+        .add-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-sub.positive {
+            color: #4caf50;
+        }
+
+        .stat-sub.negative {
+            color: #f44336;
+        }
+
+        /* Shift Tabs */
+        .shift-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            width: fit-content;
+        }
+
+        .shift-tab {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shift-tab:hover {
+            color: #ff6b6b;
+        }
+
+        .shift-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .shift-tab.day i {
+            color: #f39c12;
+        }
+
+        .shift-tab.night i {
+            color: #2c3e50;
+        }
+
+        .shift-tab.active i {
+            color: white;
+        }
+
+        /* Delivery Grid Layout */
+        .delivery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Map Container */
+        .map-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            height: 400px;
+        }
+
+        #deliveryMap {
+            height: 100%;
+            width: 100%;
+            border-radius: 10px;
+            z-index: 1;
+        }
+
+        /* Zone List */
+        .zone-list {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .zone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .zone-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .zone-item {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .zone-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .zone-item.active {
+            border-color: #ff6b6b;
+        }
+
+        .zone-item.zone-a { border-left-color: #ff6b6b; }
+        .zone-item.zone-b { border-left-color: #4ecdc4; }
+        .zone-item.zone-c { border-left-color: #f39c12; }
+        .zone-item.zone-d { border-left-color: #9b59b6; }
+
+        .zone-name {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .zone-name h4 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .zone-badge {
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+
+        .zone-badge.day {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        .zone-badge.night {
+            background: #cce5ff;
+            color: #2c3e50;
+        }
+
+        .zone-badge.both {
+            background: #e8f5e8;
+            color: #4caf50;
+        }
+
+        .zone-stats {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .zone-stats i {
+            color: #ff6b6b;
+            margin-right: 0.3rem;
+        }
+
+        .zone-progress {
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 3px;
+        }
+
+        /* Delivery Partners Section */
+        .partners-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 2rem;
+        }
+
+        .partners-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .partners-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .partner-status-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-tab {
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .status-tab.active {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .partner-card {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .partner-card:hover {
+            transform: translateY(-3px);
+            border-color: #ff6b6b;
+        }
+
+        .partner-card.online {
+            border-left: 4px solid #4caf50;
+        }
+
+        .partner-card.offline {
+            border-left: 4px solid #f44336;
+        }
+
+        .partner-card.busy {
+            border-left: 4px solid #ff9800;
+        }
+
+        .partner-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .partner-info {
+            flex: 1;
+        }
+
+        .partner-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .partner-details {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .partner-rating {
+            color: #ffc107;
+            font-size: 0.85rem;
+        }
+
+        .partner-status {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-busy {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Today's Deliveries */
+        .deliveries-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .deliveries-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .deliveries-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .delivery-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .delivery-filters select {
+            padding: 0.4rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .deliveries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .delivery-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fc;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .delivery-time {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .time-badge {
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .delivery-info {
+            flex: 1;
+        }
+
+        .delivery-address {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .delivery-meta {
+            font-size: 0.85rem;
+            color: #999;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .delivery-status {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-assigned {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-picked {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .delivery-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-icon:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .delivery-grid {
+                grid-template-columns: 1fr;
+            }
+            .partners-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .partners-grid {
+                grid-template-columns: 1fr;
+            }
+            .delivery-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="date-time" id="currentDateTime"></div>
+            <div class="user-menu">
+                <div class="user-avatar">AD</div>
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i>Dashboard</a></li>
+            <li class="nav-item"><a href="subscriptions.html" class="nav-link"><i class="fas fa-calendar-check"></i>Subscriptions</a></li>
+            <li class="nav-item"><a href="customers.html" class="nav-link"><i class="fas fa-users"></i>Customers</a></li>
+            <li class="nav-item"><a href="providers.html" class="nav-link"><i class="fas fa-store"></i>Providers</a></li>
+            <li class="nav-item"><a href="orders.html" class="nav-link"><i class="fas fa-shopping-bag"></i>Daily Orders</a></li>
+            <li class="nav-item"><a href="menu.html" class="nav-link"><i class="fas fa-utensils"></i>Menu Planner</a></li>
+            <li class="nav-item"><a href="promotions.html" class="nav-link"><i class="fas fa-tags"></i>Promotions</a></li>
+            <li class="nav-item"><a href="delivery.html" class="nav-link active"><i class="fas fa-truck"></i>Delivery Areas</a></li>
+            <li class="nav-item"><a href="payments.html" class="nav-link"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li class="nav-item"><a href="complaints.html" class="nav-link"><i class="fas fa-exclamation-circle"></i>Feedback</a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-truck" style="color: #ff6b6b;"></i>
+                Delivery Management
+            </h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search zones or partners...">
+                </div>
+                <div class="filter-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </div>
+                <button class="add-btn" onclick="openAddZoneModal()">
+                    <i class="fas fa-plus"></i>
+                    <span>New Zone</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Delivery Zones</span>
+                    <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +2 this month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Delivery Partners</span>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="stat-value">24</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> 18 active now</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Today's Deliveries</span>
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                </div>
+                <div class="stat-value">1,245</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> 87% completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Avg. Delivery Time</span>
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="stat-value">32 min</div>
+                <div class="stat-sub negative"><i class="fas fa-arrow-down"></i> -2 min target</div>
+            </div>
+        </div>
+
+        <!-- Shift Tabs -->
+        <div class="shift-tabs">
+            <div class="shift-tab day active" onclick="switchShift('day')">
+                <i class="fas fa-sun"></i> Day Shift (7 AM - 3 PM)
+            </div>
+            <div class="shift-tab night" onclick="switchShift('night')">
+                <i class="fas fa-moon"></i> Night Shift (6 PM - 11 PM)
+            </div>
+        </div>
+
+        <!-- Delivery Grid -->
+        <div class="delivery-grid">
+            <!-- Map Container -->
+            <div class="map-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>Delivery Zones Map</h3>
+                    <span style="color: #ff6b6b;"><i class="fas fa-circle"></i> 12 Active Zones</span>
+                </div>
+                <div id="deliveryMap">
+                    <!-- Map will be initialized here -->
+                    <div style="height: 100%; background: #e9ecef; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <i class="fas fa-map-marked-alt" style="font-size: 3rem; margin-right: 1rem;"></i>
+                        <span>Map View Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone List -->
+            <div class="zone-list">
+                <div class="zone-header">
+                    <h3>Delivery Zones</h3>
+                    <span>Total Tiffins: 1,245</span>
+                </div>
+                
+                <div class="zone-item zone-a active" onclick="selectZone('A')">
+                    <div class="zone-name">
+                        <h4>Zone A - Andheri East</h4>
+                        <span class="zone-badge both">Day+Night</span>
+                    </div>
+                    <div class="zone-stats">
+                        <span><i class="fas fa-box"></i> 245 tiffins</span>
+                        <span><i class="fas fa-users"></i> 3 partners</span>
+                        <span><i class="fas fa-clock"></i> 28 min</span>
+                    </div>
+                    <div class="zone-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+                            <span>Delivered: 189</span>
+                            <span>Pending: 56</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 77%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zone-item zone-b" onclick="selectZone('B')">
+                    <div class="zone-name">
+                        <h4>Zone B - Andheri West</h4>
+                        <span class="zone-badge day">Day Only</span>
+                    </div>
+                    <div class="zone-stats">
+                        <span><i class="fas fa-box"></i> 180 tiffins</span>
+                        <span><i class="fas fa-users"></i> 2 partners</span>
+                        <span><i class="fas fa-clock"></i> 25 min</span>
+                    </div>
+                    <div class="zone-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+                            <span>Delivered: 145</span>
+                            <span>Pending: 35</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 81%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zone-item zone-c" onclick="selectZone('C')">
+                    <div class="zone-name">
+                        <h4>Zone C - Powai</h4>
+                        <span class="zone-badge both">Day+Night</span>
+                    </div>
+                    <div class="zone-stats">
+                        <span><i class="fas fa-box"></i> 320 tiffins</span>
+                        <span><i class="fas fa-users"></i> 4 partners</span>
+                        <span><i class="fas fa-clock"></i> 35 min</span>
+                    </div>
+                    <div class="zone-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+                            <span>Delivered: 278</span>
+                            <span>Pending: 42</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 87%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zone-item zone-d" onclick="selectZone('D')">
+                    <div class="zone-name">
+                        <h4>Zone D - BKC</h4>
+                        <span class="zone-badge night">Night Only</span>
+                    </div>
+                    <div class="zone-stats">
+                        <span><i class="fas fa-box"></i> 150 tiffins</span>
+                        <span><i class="fas fa-users"></i> 2 partners</span>
+                        <span><i class="fas fa-clock"></i> 22 min</span>
+                    </div>
+                    <div class="zone-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+                            <span>Delivered: 98</span>
+                            <span>Pending: 52</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Partners Section -->
+        <div class="partners-section">
+            <div class="partners-header">
+                <h3><i class="fas fa-bike" style="color: #ff6b6b;"></i> Delivery Partners</h3>
+                <div class="partner-status-tabs">
+                    <span class="status-tab active" onclick="filterPartners('all')">All</span>
+                    <span class="status-tab" onclick="filterPartners('online')">Online</span>
+                    <span class="status-tab" onclick="filterPartners('busy')">Busy</span>
+                    <span class="status-tab" onclick="filterPartners('offline')">Offline</span>
+                </div>
+            </div>
+
+            <div class="partners-grid">
+                <div class="partner-card online">
+                    <div class="partner-avatar">RJ</div>
+                    <div class="partner-info">
+                        <div class="partner-name">Rajesh Kumar</div>
+                        <div class="partner-details">Zone A • 5 deliveries</div>
+                        <div class="partner-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i> 4.5
+                        </div>
+                        <span class="partner-status status-online">Online</span>
+                    </div>
+                </div>
+
+                <div class="partner-card busy">
+                    <div class="partner-avatar">SK</div>
+                    <div class="partner-info">
+                        <div class="partner-name">Suresh Yadav</div>
+                        <div class="partner-details">Zone C • 8 deliveries</div>
+                        <div class="partner-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i> 5.0
+                        </div>
+                        <span class="partner-status status-busy">Busy (2 pending)</span>
+                    </div>
+                </div>
+
+                <div class="partner-card online">
+                    <div class="partner-avatar">MP</div>
+                    <div class="partner-info">
+                        <div class="partner-name">Manoj Patil</div>
+                        <div class="partner-details">Zone B • 3 deliveries</div>
+                        <div class="partner-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i> 5.0
+                        </div>
+                        <span class="partner-status status-online">Online</span>
+                    </div>
+                </div>
+
+                <div class="partner-card online">
+                    <div class="partner-avatar">VK</div>
+                    <div class="partner-info">
+                        <div class="partner-name">Vikas Kumar</div>
+                        <div class="partner-details">Zone A • 4 deliveries</div>
+                        <div class="partner-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i> 5.0
+                        </div>
+                        <span class="partner-status status-online">Online</span>
+                    </div>
+                </div>
+
+                <div class="partner-card offline">
+                    <div class="partner-avatar">RS</div>
+                    <div class="partner-info">
+                        <div class="partner-name">Rahul Singh</div>
+                        <div class="partner-details">Zone D • 0 deliveries</div>
+                        <div class="partner-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i> 5.0
+                        </div>
+                        <span class="partner-status status-offline">Offline</span>
+                    </div>
+                </div>
+
+                <div class="partner-card busy">
+                    <div class="partner-avatar">AN</div>
+                    <div class="partner-info">
+                        <div class="partner-name">Ajay Nair</div>
+                        <div class="partner-details">Zone C • 6 deliveries</div>
+                        <div class="partner-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i> 4.8
+                        </div>
+                        <span class="partner-status status-busy">Busy (1 pending)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Deliveries -->
+        <div class="deliveries-section">
+            <div class="deliveries-header">
+                <h3><i class="fas fa-clipboard-list" style="color: #ff6b6b;"></i> Today's Deliveries</h3>
+                <div class="delivery-filters">
+                    <select>
+                        <option>All Zones</option>
+                        <option>Zone A</option>
+                        <option>Zone B</option>
+                        <option>Zone C</option>
+                        <option>Zone D</option>
+                    </select>
+                    <select>
+                        <option>All Status</option>
+                        <option>Pending</option>
+                        <option>Assigned</option>
+                        <option>Picked Up</option>
+                        <option>Delivered</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="deliveries-list">
+                <div class="delivery-item">
+                    <div class="delivery-time">
+                        <div class="time-badge">11:30 AM</div>
+                        <div style="font-size: 0.8rem;">Day</div>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="delivery-address">#245, Silver Spring, Andheri East</div>
+                        <div class="delivery-meta">
+                            <span><i class="fas fa-user"></i> Rahul Sharma</span>
+                            <span><i class="fas fa-box"></i> 2 tiffins</span>
+                            <span><i class="fas fa-store"></i> Spice Kitchen</span>
+                        </div>
+                    </div>
+                    <div class="delivery-status status-assigned">Assigned</div>
+                    <div class="delivery-actions">
+                        <div class="action-icon" onclick="trackDelivery('DEL001')" title="Track"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="action-icon" onclick="assignPartner('DEL001')" title="Reassign"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="action-icon" onclick="callCustomer('DEL001')" title="Call"><i class="fas fa-phone"></i></div>
+                    </div>
+                </div>
+
+                <div class="delivery-item">
+                    <div class="delivery-time">
+                        <div class="time-badge">12:15 PM</div>
+                        <div style="font-size: 0.8rem;">Day</div>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="delivery-address">A-401, Lake Homes, Powai</div>
+                        <div class="delivery-meta">
+                            <span><i class="fas fa-user"></i> Priya Patel</span>
+                            <span><i class="fas fa-box"></i> 1 tiffin</span>
+                            <span><i class="fas fa-store"></i> Punjab Grill</span>
+                        </div>
+                    </div>
+                    <div class="delivery-status status-picked">Picked Up</div>
+                    <div class="delivery-actions">
+                        <div class="action-icon" onclick="trackDelivery('DEL002')" title="Track"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="action-icon" onclick="assignPartner('DEL002')" title="Reassign"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="action-icon" onclick="callCustomer('DEL002')" title="Call"><i class="fas fa-phone"></i></div>
+                    </div>
+                </div>
+
+                <div class="delivery-item">
+                    <div class="delivery-time">
+                        <div class="time-badge">01:00 PM</div>
+                        <div style="font-size: 0.8rem;">Day</div>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="delivery-address">Infosys BKC, 5th Floor</div>
+                        <div class="delivery-meta">
+                            <span><i class="fas fa-building"></i> Infosys (15 tiffins)</span>
+                            <span><i class="fas fa-store"></i> Madras Cafe</span>
+                        </div>
+                    </div>
+                    <div class="delivery-status status-pending">Pending</div>
+                    <div class="delivery-actions">
+                        <div class="action-icon" onclick="trackDelivery('DEL003')" title="Track"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="action-icon" onclick="assignPartner('DEL003')" title="Assign"><i class="fas fa-user-plus"></i></div>
+                        <div class="action-icon" onclick="callCustomer('DEL003')" title="Call"><i class="fas fa-phone"></i></div>
+                    </div>
+                </div>
+
+                <div class="delivery-item">
+                    <div class="delivery-time">
+                        <div class="time-badge">08:30 PM</div>
+                        <div style="font-size: 0.8rem;">Night</div>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="delivery-address">7/B, Raj Bhavan, Andheri West</div>
+                        <div class="delivery-meta">
+                            <span><i class="fas fa-user"></i> Amit Kumar</span>
+                            <span><i class="fas fa-box"></i> 2 tiffins</span>
+                            <span><i class="fas fa-store"></i> Dragon House</span>
+                        </div>
+                    </div>
+                    <div class="delivery-status status-delivered">Delivered</div>
+                    <div class="delivery-actions">
+                        <div class="action-icon" onclick="viewDetails('DEL004')" title="Details"><i class="fas fa-eye"></i></div>
+                        <div class="action-icon" onclick="callCustomer('DEL004')" title="Call"><i class="fas fa-phone"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Zone Modal -->
+    <div id="addZoneModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Delivery Zone</h2>
+                <button class="close-modal" onclick="closeAddZoneModal()">&times;</button>
+            </div>
+            <form id="addZoneForm" onsubmit="addZone(event)">
+                <div class="form-group">
+                    <label>Zone Name</label>
+                    <input type="text" placeholder="e.g., Zone E - Bandra" required>
+                </div>
+                <div class="form-group">
+                    <label>Area Covered</label>
+                    <textarea rows="3" placeholder="Enter areas covered (comma separated)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Shift</label>
+                    <select>
+                        <option>Day Only</option>
+                        <option>Night Only</option>
+                        <option>Both Shifts</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Number of Partners Needed</label>
+                    <input type="number" value="2">
+                </div>
+                <div class="form-group">
+                    <label>Estimated Tiffins per Day</label>
+                    <input type="number" value="100">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Radius (km)</label>
+                    <input type="number" value="5">
+                </div>
+                <button type="submit" class="btn-primary">Create Zone</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Track Delivery Modal -->
+    <div id="trackModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Track Delivery</h2>
+                <button class="close-modal" onclick="closeTrackModal()">&times;</button>
+            </div>
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-map-marked-alt" style="font-size: 4rem; color: #ff6b6b;"></i>
+                <h3 style="margin: 1rem 0;">Live Tracking</h3>
+                <p style="color: #666;">Delivery partner is on the way</p>
+                <div style="background: #f8f9fc; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Estimated arrival:</span>
+                        <span style="font-weight: 600;">10 minutes</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+                        <span>Current location:</span>
+                        <span style="font-weight: 600;">Andheri East</span>
+                    </div>
+                </div>
+                <button class="btn-secondary" onclick="closeTrackModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 1rem;">Confirm Logout</h3>
+            <p style="margin-bottom: 2rem; color: #666;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeLogoutModal()" class="btn-secondary">Cancel</button>
+                <button onclick="confirmLogout()" class="btn-primary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Switch between day and night shift
+        function switchShift(shift) {
+            const tabs = document.querySelectorAll('.shift-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.shift-tab').classList.add('active');
+            
+            // Update data based on shift
+            console.log('Switched to', shift, 'shift');
+        }
+
+        // Select zone
+        function selectZone(zone) {
+            const zones = document.querySelectorAll('.zone-item');
+            zones.forEach(z => z.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            console.log('Selected zone:', zone);
+        }
+
+        // Filter partners
+        function filterPartners(filter) {
+            const tabs = document.querySelectorAll('.status-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log('Filtering partners:', filter);
+        }
+
+        // Delivery actions
+        function trackDelivery(id) {
+            document.getElementById('trackModal').style.display = 'flex';
+        }
+
+        function closeTrackModal() {
+            document.getElementById('trackModal').style.display = 'none';
+        }
+
+        function assignPartner(id) {
+            alert(`Assign partner to delivery ${id}`);
+        }
+
+        function callCustomer(id) {
+            alert(`Calling customer for delivery ${id}`);
+        }
+
+        function viewDetails(id) {
+            alert(`Viewing details for delivery ${id}`);
+        }
+
+        // Zone modal
+        function openAddZoneModal() {
+            document.getElementById('addZoneModal').style.display = 'flex';
+        }
+
+        function closeAddZoneModal() {
+            document.getElementById('addZoneModal').style.display = 'none';
+        }
+
+        function addZone(event) {
+            event.preventDefault();
+            alert('New delivery zone added!');
+            closeAddZoneModal();
+        }
+
+        // Toggle filters
+        function toggleFilters() {
+            alert('Filter options coming soon!');
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        });
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const zoneModal = document.getElementById('addZoneModal');
+            const trackModal = document.getElementById('trackModal');
+            const logoutModal = document.getElementById('logoutModal');
+            
+            if (event.target === zoneModal) zoneModal.style.display = 'none';
+            if (event.target === trackModal) trackModal.style.display = 'none';
+            if (event.target === logoutModal) logoutModal.style.display = 'none';
+        }
+
+        // Initialize map (simplified - in production you'd use Leaflet/Google Maps)
+        function initMap() {
+            // This would initialize the actual map
+            console.log('Map initialized');
+        }
+    </script>
+</body>
+</html>
