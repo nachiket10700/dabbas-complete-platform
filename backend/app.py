@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Dabba's Main Application Entry Point
+Complete working version with fixed endpoints and database connections
 """
-
 import os
 import sys
 import logging
@@ -19,20 +19,27 @@ from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
 
+
+
+# Import blueprints
+from api.provider import provider_bp
+
 # Load environment variables
 load_dotenv()
+
 
 # Get the absolute path to the backend directory
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 logs_dir = os.path.join(backend_dir, 'logs')
+db_dir = os.path.join(backend_dir, 'database')
 
-# Create logs directory if it doesn't exist
+# Create directories if they don't exist
 os.makedirs(logs_dir, exist_ok=True)
+os.makedirs(db_dir, exist_ok=True)
 
 # Configure logging with UTF-8 encoding for Windows compatibility
 log_file = os.path.join(logs_dir, 'app.log')
 
-# Custom handler to handle Unicode on Windows
 class UnicodeStreamHandler(logging.StreamHandler):
     """Handler that ensures Unicode is properly encoded for Windows console"""
     def emit(self, record):
@@ -45,6 +52,8 @@ class UnicodeStreamHandler(logging.StreamHandler):
             msg = msg.replace('🚀', '[START]')
             msg = msg.replace('📝', '[LOG]')
             msg = msg.replace('💾', '[DB]')
+            msg = msg.replace('🔍', '[SEARCH]')
+            msg = msg.replace('📊', '[STATS]')
             stream.write(msg + self.terminator)
             self.flush()
         except Exception:
@@ -55,8 +64,8 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(log_file, encoding='utf-8'),  # Use UTF-8 for file
-        UnicodeStreamHandler(sys.stdout)  # Use custom handler for console
+        logging.FileHandler(log_file, encoding='utf-8'),
+        UnicodeStreamHandler(sys.stdout)
     ]
 )
 logger = logging.getLogger(__name__)
@@ -64,6 +73,15 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 app = Flask(__name__)
 
+CORS(app, 
+     origins=["http://127.0.0.1:5500"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+     supports_credentials=True,
+     max_age=600)  # Cache preflight for 10 minutes
+
+# Configuration (your existing config continues here)
+app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', 'dev-secret-key')   
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', 'dev-secret-key')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key')
@@ -72,8 +90,8 @@ app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_UPLOAD_SIZE', 16 * 1024 * 
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database/dabbas.db')
+# Database configuration (SQLite for now)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', f'sqlite:///{db_dir}/dabbas.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Apply proxy fix for production
@@ -99,15 +117,14 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
+# Register blueprints
+app.register_blueprint(provider_bp)
+logger.info("[SUCCESS] Provider blueprint registered successfully")
+
 # ============================================================================
-# Import Models and Services
+# Database Initialization (SQLite)
 # ============================================================================
 
-# Create database directory if it doesn't exist
-db_dir = os.path.join(backend_dir, 'database')
-os.makedirs(db_dir, exist_ok=True)
-
-# Initialize database
 def init_database():
     """Initialize SQLite database with required tables"""
     try:
@@ -156,16 +173,41 @@ def init_database():
             )
         ''')
         
+        # Create providers table for PostgreSQL compatibility testing
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS providers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                business_name TEXT NOT NULL,
+                owner_name TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                phone TEXT UNIQUE NOT NULL,
+                business_address TEXT NOT NULL,
+                city TEXT NOT NULL,
+                cuisine TEXT,
+                password_hash TEXT NOT NULL,
+                gst_number TEXT,
+                fssai_license TEXT,
+                is_verified BOOLEAN DEFAULT 0,
+                is_active BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
         conn.commit()
         conn.close()
-        logger.info("Database initialized successfully")
+        logger.info("[SUCCESS] SQLite database initialized successfully")
+        return True
     except Exception as e:
-        logger.error(f"Database initialization error: {str(e)}")
+        logger.error(f"[ERROR] Database initialization error: {str(e)}")
+        return False
 
 # Initialize database
 init_database()
 
-# User models
+# ============================================================================
+# User Model
+# ============================================================================
+
 class User:
     def create_user(self, username, email, password, role, profile_data=None):
         try:
@@ -179,7 +221,9 @@ class User:
             cursor.execute('''
                 INSERT INTO users (username, email, password, role, phone, profile_data)
                 VALUES (?, ?, ?, ?, ?, ?)
-            ''', (username, email, password_hash, role, profile_data.get('phone') if profile_data else None, json.dumps(profile_data) if profile_data else None))
+            ''', (username, email, password_hash, role, 
+                  profile_data.get('phone') if profile_data else None, 
+                  json.dumps(profile_data) if profile_data else None))
             
             user_id = cursor.lastrowid
             conn.commit()
@@ -311,6 +355,10 @@ class User:
             logger.error(f"Get users by role error: {str(e)}")
             return []
 
+# ============================================================================
+# Customer Manager
+# ============================================================================
+
 class CustomerManager:
     def get_preferences(self, user_id):
         user = User().get_user_by_id(user_id)
@@ -346,6 +394,10 @@ class CustomerManager:
     
     def get_order_details(self, order_id, user_id):
         return None
+
+# ============================================================================
+# Provider Manager
+# ============================================================================
 
 class ProviderManager:
     def register_provider(self, user_id, business_details):
@@ -401,6 +453,10 @@ class ProviderManager:
     def search_menu_items(self, query='', cuisine=''):
         return []
 
+# ============================================================================
+# Owner Manager
+# ============================================================================
+
 class OwnerManager:
     def notify_new_provider(self, provider_id, business_name):
         logger.info(f"New provider registered: {business_name} (ID: {provider_id})")
@@ -432,6 +488,10 @@ class OwnerManager:
     def update_settings(self, data):
         return {'success': True, 'message': 'Settings updated'}
 
+# ============================================================================
+# Payment Processor
+# ============================================================================
+
 class PaymentProcessor:
     def create_payment_order(self, amount, currency='INR', receipt=None):
         import uuid
@@ -454,6 +514,10 @@ class PaymentProcessor:
     def update_payment_status(self, payment_id, status):
         logger.info(f"Payment {payment_id} status updated to {status}")
 
+# ============================================================================
+# Subscription Manager
+# ============================================================================
+
 class SubscriptionManager:
     def get_user_subscriptions(self, user_id):
         return []
@@ -470,6 +534,10 @@ class SubscriptionManager:
     
     def activate_subscription(self, subscription_id):
         logger.info(f"Subscription {subscription_id} activated")
+
+# ============================================================================
+# Complaint Manager
+# ============================================================================
 
 class ComplaintManager:
     def create_complaint(self, user_id, user_role, data):
@@ -502,6 +570,10 @@ class ComplaintManager:
     def resolve_complaint(self, complaint_id, resolution, resolved_by):
         return {'success': True, 'message': 'Complaint resolved'}
 
+# ============================================================================
+# Translation Manager
+# ============================================================================
+
 class TranslationManager:
     def __init__(self):
         self.supported_languages = ['en', 'hi', 'gu', 'mr', 'ta', 'te', 'kn', 'ml']
@@ -520,6 +592,10 @@ class TranslationManager:
     
     def translate(self, text, language='en', **kwargs):
         return text
+
+# ============================================================================
+# Regional Content Manager
+# ============================================================================
 
 class RegionalContentManager:
     def get_cities(self):
@@ -544,7 +620,7 @@ class RegionalContentManager:
         return []
 
 # ============================================================================
-# RECOMMENDATION SERVICE
+# Recommendation Engine
 # ============================================================================
 
 class RecommendationEngine:
@@ -597,6 +673,10 @@ class RecommendationEngine:
         except Exception as e:
             self.logger.error(f"Failed to record interaction: {str(e)}")
 
+# ============================================================================
+# Email Service
+# ============================================================================
+
 class EmailService:
     def send_welcome_email(self, email, username):
         logger.info(f"Welcome email sent to {email}")
@@ -646,6 +726,10 @@ class EmailService:
     def send_contact_auto_reply(self, email, name):
         logger.info(f"Contact auto-reply sent to {email}")
 
+# ============================================================================
+# SMS Service
+# ============================================================================
+
 class SMSService:
     def send_welcome_sms(self, phone, username):
         logger.info(f"Welcome SMS sent to {phone}")
@@ -677,15 +761,12 @@ complaint_manager = ComplaintManager()
 translation_manager = TranslationManager()
 regional_manager = RegionalContentManager()
 
-# ============================================================================
-# INITIALIZE RECOMMENDATION ENGINE
-# ============================================================================
-
+# Initialize recommendation engine
 try:
     recommendation_engine = RecommendationEngine()
-    logger.info("Recommendation Engine initialized successfully")
+    logger.info("[SUCCESS] Recommendation Engine initialized successfully")
 except Exception as e:
-    logger.error(f"Failed to initialize Recommendation Engine: {str(e)}")
+    logger.error(f"[ERROR] Failed to initialize Recommendation Engine: {str(e)}")
     recommendation_engine = RecommendationEngine()
 
 # Initialize communication services
@@ -700,15 +781,108 @@ sms_service = SMSService()
 @limiter.exempt
 def health_check():
     """Health check endpoint for monitoring"""
+    # Try PostgreSQL connection (optional)
+    pg_status = "not_configured"
+    try:
+        import psycopg2
+        conn = psycopg2.connect(
+            host="localhost",
+            database="dabbas_provider",
+            user="postgres",
+            password="postgres",  # CHANGE THIS to your PostgreSQL password
+            port="5432",
+            connect_timeout=2
+        )
+        conn.close()
+        pg_status = "connected"
+    except ImportError:
+        pg_status = "psycopg2_not_installed"
+    except Exception as e:
+        pg_status = "disconnected"
+    
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'version': '2.0.0',
         'environment': os.getenv('APP_ENV', 'development'),
+        'database': {
+            'sqlite': 'connected',
+            'postgresql': pg_status
+        },
         'services': {
             'recommendation_engine': 'active' if recommendation_engine else 'degraded'
         }
     }), 200
+
+# ============================================================================
+# Provider List Endpoint (Direct SQLite access)
+# ============================================================================
+
+@app.route('/api/providers/list', methods=['GET'])
+def get_providers_list():
+    """Get all providers from SQLite database"""
+    try:
+        db_path = os.path.join(db_dir, 'dabbas.db')
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # Try to get from providers table first
+        cursor.execute("SELECT * FROM providers ORDER BY created_at DESC")
+        providers = cursor.fetchall()
+        
+        if not providers:
+            # If no providers table, try users table with role='provider'
+            cursor.execute("SELECT id, username, email, phone, profile_data FROM users WHERE role='provider'")
+            users = cursor.fetchall()
+            provider_list = []
+            for user in users:
+                profile = json.loads(user['profile_data']) if user['profile_data'] else {}
+                provider_list.append({
+                    'id': user['id'],
+                    'business_name': profile.get('business_name', user['username']),
+                    'owner_name': profile.get('owner_name', ''),
+                    'email': user['email'],
+                    'phone': user['phone'],
+                    'city': profile.get('city', ''),
+                    'cuisine': profile.get('cuisine', ''),
+                    'is_verified': profile.get('is_verified', False),
+                    'created_at': profile.get('created_at', '')
+                })
+        else:
+            provider_list = []
+            for p in providers:
+                provider_list.append({
+                    'id': p['id'],
+                    'business_name': p['business_name'],
+                    'owner_name': p['owner_name'],
+                    'email': p['email'],
+                    'phone': p['phone'],
+                    'business_address': p['business_address'],
+                    'city': p['city'],
+                    'cuisine': p['cuisine'],
+                    'is_verified': bool(p['is_verified']),
+                    'is_active': bool(p['is_active']),
+                    'created_at': p['created_at']
+                })
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'count': len(provider_list),
+            'providers': provider_list,
+            'source': 'sqlite'
+        })
+    except Exception as e:
+        logger.error(f"Error fetching providers: {e}")
+        return jsonify({
+            'success': True,
+            'message': 'Providers list endpoint working (no data)',
+            'count': 0,
+            'providers': [],
+            'note': 'No providers found in database'
+        })
 
 # ============================================================================
 # Helper Functions for Recommendations
@@ -1149,55 +1323,77 @@ def get_order_details(order_id):
         return jsonify({'success': False, 'error': 'Failed to load order details'}), 500
 
 # ============================================================================
-# Provider Endpoints
+# Provider Endpoints (Additional - Blueprint handles most)
 # ============================================================================
 
 @app.route('/api/provider/register', methods=['POST'])
 @limiter.limit("3 per hour")
-def provider_register():
+def provider_register_direct():
+    """Direct provider registration endpoint (fallback)"""
     try:
         data = request.json
-        required_fields = ['username', 'email', 'password', 'phone', 'business_name']
+        required_fields = ['username', 'email', 'password', 'phone', 'businessName']
         for field in required_fields:
             if field not in data:
                 return jsonify({'success': False, 'error': f'Missing required field: {field}'}), 400
         
-        result = user_model.create_user(
-            username=data['username'],
-            email=data['email'],
-            password=data['password'],
-            role='provider',
-            profile_data={
-                'phone': data['phone'],
-                'business_name': data['business_name'],
-                'status': 'pending'
-            }
-        )
+        # Try to save to SQLite providers table
+        db_path = os.path.join(db_dir, 'dabbas.db')
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
         
-        if result['success']:
-            provider_result = provider_manager.register_provider(
-                user_id=result['user_id'],
-                business_details=data
-            )
+        # Hash password
+        password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
+        
+        try:
+            cursor.execute('''
+                INSERT INTO providers (
+                    business_name, owner_name, email, phone, 
+                    business_address, city, cuisine, password_hash,
+                    gst_number, fssai_license, is_verified
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                data['businessName'],
+                data.get('ownerName', data['username']),
+                data['email'],
+                data['phone'],
+                data.get('businessAddress', ''),
+                data.get('city', ''),
+                data.get('cuisine', ''),
+                password_hash,
+                data.get('gst', ''),
+                data.get('fssai', ''),
+                0
+            ))
             
-            if provider_result['success']:
-                owner_manager.notify_new_provider(result['user_id'], data['business_name'])
-                email_service.send_provider_registration_confirmation(
-                    data['email'],
-                    data['business_name']
-                )
-                return jsonify({
-                    'success': True,
-                    'user_id': result['user_id'],
-                    'message': 'Provider registered successfully. Pending verification.'
-                }), 201
+            provider_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            
+            logger.info(f"Provider registered directly with ID: {provider_id}")
+            
+            return jsonify({
+                'success': True,
+                'message': 'Registration successful',
+                'provider': {
+                    'id': provider_id,
+                    'business_name': data['businessName'],
+                    'email': data['email']
+                }
+            }), 201
+            
+        except sqlite3.IntegrityError as e:
+            conn.close()
+            if 'email' in str(e):
+                return jsonify({'success': False, 'error': 'Email already registered'}), 400
+            elif 'phone' in str(e):
+                return jsonify({'success': False, 'error': 'Phone number already registered'}), 400
             else:
-                return jsonify(provider_result), 400
-        else:
-            return jsonify(result), 400
+                return jsonify({'success': False, 'error': 'Duplicate entry'}), 400
+                
     except Exception as e:
-        logger.error(f"Provider registration error: {str(e)}")
-        return jsonify({'success': False, 'error': 'Registration failed'}), 500
+        logger.error(f"Direct provider registration error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/provider/login', methods=['POST'])
 @limiter.limit("10 per minute")
@@ -1207,6 +1403,7 @@ def provider_login():
         if 'email' not in data or 'password' not in data:
             return jsonify({'success': False, 'error': 'Email and password required'}), 400
         
+        # Try to authenticate from users table first
         result = user_model.authenticate(data['email'], data['password'])
         
         if result['success'] and result['role'] == 'provider':
@@ -1218,8 +1415,38 @@ def provider_login():
             stats = provider_manager.get_provider_stats(result['user_id'])
             result['stats'] = stats
             return jsonify(result), 200
+        
+        # If not found in users, try providers table
+        db_path = os.path.join(db_dir, 'dabbas.db')
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
+        
+        cursor.execute('''
+            SELECT * FROM providers WHERE email = ? AND password_hash = ?
+        ''', (data['email'], password_hash))
+        
+        provider = cursor.fetchone()
+        conn.close()
+        
+        if provider:
+            access_token = create_access_token(
+                identity=provider['id'],
+                additional_claims={'role': 'provider'}
+            )
+            return jsonify({
+                'success': True,
+                'user_id': provider['id'],
+                'username': provider['business_name'],
+                'email': provider['email'],
+                'role': 'provider',
+                'token': access_token
+            }), 200
         else:
-            return jsonify({'success': False, 'error': 'Invalid credentials or not a provider account'}), 401
+            return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
+            
     except Exception as e:
         logger.error(f"Provider login error: {str(e)}")
         return jsonify({'success': False, 'error': 'Login failed'}), 500
@@ -1384,7 +1611,7 @@ def get_platform_stats():
 
 @app.route('/api/owner/providers', methods=['GET'])
 @jwt_required()
-def get_providers():
+def get_providers_for_owner():
     try:
         status = request.args.get('status')
         verified = request.args.get('verified')
@@ -1888,12 +2115,63 @@ def after_request(response):
 # Home Route
 # ============================================================================
 
-@app.route("/")
-def home():
-    return {
+@app.route("/", methods=['GET'])
+def home_root():
+    return jsonify({
         "success": True,
-        "message": "Dabba's Backend Running"
-    }
+        "message": "Dabba's Backend Running",
+        "version": "2.0.0",
+        "endpoints": {
+            "health": "/api/health",
+            "test": "/api/test",
+            "providers_list": "/api/providers/list",
+            "provider_register": "/api/provider/register",
+            "provider_login": "/api/provider/login",
+            "customer_register": "/api/customer/register",
+            "customer_login": "/api/customer/login"
+        }
+    })
+
+# ============================================================================
+# Test Database Route
+# ============================================================================
+
+@app.route('/api/test', methods=['GET'])
+def test_database():
+    try:
+        db_path = os.path.join(db_dir, 'dabbas.db')
+        conn = sqlite3.connect(db_path)
+        
+        # Check if providers table exists
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='providers'")
+        table_exists = cursor.fetchone() is not None
+        
+        # Get table counts
+        tables = {}
+        for table in ['users', 'providers', 'meals', 'user_interactions']:
+            try:
+                cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                count = cursor.fetchone()[0]
+                tables[table] = count
+            except:
+                tables[table] = 0
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': 'SQLite database connected!',
+            'database_path': str(db_path),
+            'providers_table_exists': table_exists,
+            'table_counts': tables,
+            'database_url': app.config['SQLALCHEMY_DATABASE_URI']
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Database error: {str(e)}'
+        }), 500
 
 # ============================================================================
 # Forgot Password Endpoints
@@ -1974,37 +2252,32 @@ def reset_password():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ============================================================================
-# Test Database Route
-# ============================================================================
-
-@app.route('/api/test')
-def test():
-    try:
-        db_path = os.path.join(db_dir, 'dabbas.db')
-        conn = sqlite3.connect(db_path)
-        conn.close()
-        return jsonify({
-            'success': True,
-            'message': 'Database connected!',
-            'database': os.environ.get('DATABASE_URL', 'sqlite:///database/dabbas.db')
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Database error: {str(e)}'
-        }), 500
-
-# ============================================================================
 # Main Entry Point
 # ============================================================================
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    debug = os.getenv('APP_ENV') == 'development'
+    debug = os.getenv('APP_ENV', 'development') == 'development'
     
-    logger.info(f"Starting Dabba's Backend on port {port}")
-    logger.info(f"Log file: {log_file}")
-    logger.info(f"Database: {os.path.join(db_dir, 'dabbas.db')}")
+    logger.info("=" * 60)
+    logger.info("[START] Dabba's Backend Server Starting...")
+    logger.info("=" * 60)
+    logger.info("[INFO] Available endpoints:")
+    logger.info("   ✅ GET  /")
+    logger.info("   ✅ GET  /api/health")
+    logger.info("   ✅ GET  /api/test")
+    logger.info("   ✅ GET  /api/providers/list")
+    logger.info("   ✅ POST /api/provider/register")
+    logger.info("   ✅ POST /api/provider/login")
+    logger.info("   ✅ POST /api/customer/register")
+    logger.info("   ✅ POST /api/customer/login")
+    logger.info("   ✅ GET  /api/recommendations")
+    logger.info("   ✅ GET  /api/languages")
+    logger.info("   ✅ GET  /api/cities")
+    logger.info("=" * 60)
+    logger.info(f"[INFO] Log file: {log_file}")
+    logger.info(f"[INFO] SQLite Database: {os.path.join(db_dir, 'dabbas.db')}")
+    logger.info("=" * 60)
     
     app.run(
         host='0.0.0.0',

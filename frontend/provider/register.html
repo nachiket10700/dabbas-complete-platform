@@ -402,21 +402,20 @@
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Get form values
-        const businessName = document.getElementById('businessName').value.trim();
-        const ownerName = document.getElementById('ownerName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const businessAddress = document.getElementById('businessAddress').value.trim();
-        const city = document.getElementById('city').value;
-        const cuisine = document.getElementById('cuisine').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const gst = document.getElementById('gst').value.trim();
-        const fssai = document.getElementById('fssai').value.trim();
+        // Get form values as strings
+        const businessName = String(document.getElementById('businessName').value.trim());
+        const ownerName = String(document.getElementById('ownerName').value.trim());
+        const email = String(document.getElementById('email').value.trim());
+        const phone = String(document.getElementById('phone').value.trim());
+        const businessAddress = String(document.getElementById('businessAddress').value.trim());
+        const city = String(document.getElementById('city').value);
+        const password = String(document.getElementById('password').value);
+        const confirmPassword = String(document.getElementById('confirmPassword').value);
+        const gst = document.getElementById('gst').value.trim() || null;
+        const fssai = document.getElementById('fssai').value.trim() || null;
 
         // Validation
-        if (!businessName || !ownerName || !email || !phone || !businessAddress || !city || !cuisine || !password) {
+        if (!businessName || !ownerName || !email || !phone || !businessAddress || !city || !password) {
             showAlert('Please fill all required fields', 'error');
             return;
         }
@@ -451,47 +450,46 @@
         registerBtn.innerHTML = '<span class="spinner"></span> Registering...';
         registerBtn.disabled = true;
 
+        // Prepare form data
+        const formData = {
+            businessName: businessName,
+            ownerName: ownerName,
+            email: email,
+            phone: phone,
+            businessAddress: businessAddress,
+            city: city,
+            password: password,
+            gst: gst,
+            fssai: fssai
+        };
+
+        console.log('Sending data:', formData);
+
         try {
-            // 🔴 FIXED: Send all required fields including username
             const response = await fetch('http://127.0.0.1:5000/api/provider/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    username: ownerName,           // Add username field
-                    businessName: businessName,
-                    ownerName: ownerName,
-                    email: email,
-                    phone: phone,
-                    businessAddress: businessAddress,
-                    city: city,
-                    cuisine: cuisine,
-                    password: password,
-                    gst: gst,
-                    fssai: fssai
-                })
+                body: JSON.stringify(formData)
             });
 
             const data = await response.json();
-
+            console.log('Response:', data);
+            
             if (data.success) {
-                showAlert('Registration successful! Redirecting to login...', 'success');
-                
-                // Store email for login page
-                localStorage.setItem('registeredEmail', email);
-                
+                showAlert('Registration successful! Redirecting...', 'success');
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 2000);
             } else {
-                showAlert(data.error || 'Registration failed', 'error');
+                showAlert('Error: ' + data.error, 'error');
                 registerBtn.innerHTML = originalText;
                 registerBtn.disabled = false;
             }
         } catch (error) {
-            console.error('Registration error:', error);
-            showAlert('Network error. Please try again.', 'error');
+            console.error('Fetch error:', error);
+            showAlert('Network error. Is the backend running?', 'error');
             registerBtn.innerHTML = originalText;
             registerBtn.disabled = false;
         }
