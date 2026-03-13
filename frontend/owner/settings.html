@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Dabba's Tiffin Service</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Toastr CSS for notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .date-time {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            color: #ff6b6b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .notification-header {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mark-all-read {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: #fff5f0;
+        }
+
+        .notification-item.unread {
+            background: #fff5f0;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .notification-footer {
+            padding: 0.5rem;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .notification-footer a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .save-btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .reset-btn {
+            padding: 0.8rem 2rem;
+            background: white;
+            color: #666;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reset-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* Settings Navigation */
+        .settings-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+        }
+
+        .settings-nav-item {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-nav-item i {
+            color: #ff6b6b;
+            transition: all 0.3s ease;
+        }
+
+        .settings-nav-item:hover {
+            color: #ff6b6b;
+        }
+
+        .settings-nav-item.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .settings-nav-item.active i {
+            color: white;
+        }
+
+        /* Settings Content */
+        .settings-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: #ff6b6b;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* Card Styles */
+        .settings-card {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-header .badge {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Commission Slider */
+        .commission-slider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .commission-slider input[type="range"] {
+            flex: 1;
+            height: 5px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+            border-radius: 5px;
+        }
+
+        .commission-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid #ff6b6b;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .commission-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ff6b6b;
+            min-width: 60px;
+        }
+
+        /* API Key Display */
+        .api-key-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f5f5f5;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .api-key-display i {
+            color: #ff6b6b;
+            cursor: pointer;
+        }
+
+        .api-key-display i:hover {
+            color: #ff8e8e;
+        }
+
+        /* Team Members */
+        .team-member {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .team-member:last-child {
+            border-bottom: none;
+        }
+
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .member-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .member-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .member-details span {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .member-role {
+            padding: 0.3rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .log-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .log-icon.success {
+            background: #4caf50;
+        }
+
+        .log-icon.warning {
+            background: #ff9800;
+        }
+
+        .log-icon.info {
+            background: #2196f3;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .log-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* Shift Timing Cards */
+        .shift-timing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .shift-timing-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .shift-timing-header i {
+            font-size: 1.5rem;
+        }
+
+        .shift-timing-header.day i {
+            color: #f39c12;
+        }
+
+        .shift-timing-header.night i {
+            color: #2c3e50;
+        }
+
+        .time-input-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .time-input-group input[type="time"] {
+            padding: 0.5rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .settings-nav {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+            .settings-nav-item {
+                width: 100%;
+                justify-content: center;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="date-time" id="currentDateTime"></div>
+            
+            <!-- Notification Bell -->
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCount">3</span>
+                
+                <!-- Notification Dropdown -->
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <span>System Notifications</span>
+                        <span class="mark-all-read" onclick="markAllAsRead(event)">Mark all as read</span>
+                    </div>
+                    <div class="notification-list" id="notificationList">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                    <div class="notification-footer">
+                        <a href="#" onclick="viewAllNotifications(event)">View All</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-menu">
+                <div class="user-avatar">AD</div>
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="providers.html" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Providers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="customers.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="complaints.html" class="nav-link">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Complaints</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link active">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-cog" style="color: #ff6b6b;"></i>
+                Settings
+            </h1>
+            <div class="header-actions">
+                <button class="reset-btn" onclick="resetSettings()">
+                    <i class="fas fa-undo"></i>
+                    Reset to Default
+                </button>
+                <button class="save-btn" onclick="saveSettings()">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Navigation -->
+        <div class="settings-nav">
+            <div class="settings-nav-item active" onclick="switchSettings('general')">
+                <i class="fas fa-sliders-h"></i>
+                General
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('business')">
+                <i class="fas fa-store"></i>
+                Business
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('shifts')">
+                <i class="fas fa-clock"></i>
+                Shifts & Timing
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('payments')">
+                <i class="fas fa-credit-card"></i>
+                Payments
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('notifications')">
+                <i class="fas fa-bell"></i>
+                Notifications
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('team')">
+                <i class="fas fa-users-cog"></i>
+                Team
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('security')">
+                <i class="fas fa-shield-alt"></i>
+                Security
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('integrations')">
+                <i class="fas fa-plug"></i>
+                Integrations
+            </div>
+            <div class="settings-nav-item" onclick="switchSettings('activity')">
+                <i class="fas fa-history"></i>
+                Activity Log
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+            <!-- General Settings -->
+            <div id="general" class="settings-section active">
+                <div class="section-title">
+                    <i class="fas fa-sliders-h"></i>
+                    General Settings
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Platform Name</label>
+                        <input type="text" value="Dabba's Tiffin Service" placeholder="Enter platform name">
+                    </div>
+                    <div class="form-group">
+                        <label>Platform URL</label>
+                        <input type="text" value="www.dabbas.com" placeholder="Enter platform URL">
+                    </div>
+                    <div class="form-group">
+                        <label>Support Email</label>
+                        <input type="email" value="support@dabbas.com" placeholder="Enter support email">
+                    </div>
+                    <div class="form-group">
+                        <label>Support Phone</label>
+                        <input type="tel" value="+91 98765 43210" placeholder="Enter support phone">
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Platform Status</h3>
+                        <span class="badge">Active</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Platform is live and accepting orders
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Allow new provider registrations
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Allow new customer registrations
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Maintenance mode (disable ordering)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Language & Region</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Default Language</label>
+                            <select>
+                                <option>English (US)</option>
+                                <option>Hindi</option>
+                                <option>Marathi</option>
+                                <option>Gujarati</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Time Zone</label>
+                            <select>
+                                <option selected>IST (UTC+5:30)</option>
+                                <option>GMT (UTC+0)</option>
+                                <option>EST (UTC-5)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select>
+                                <option selected>INR (₹)</option>
+                                <option>USD ($)</option>
+                                <option>EUR (€)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date Format</label>
+                            <select>
+                                <option selected>DD/MM/YYYY</option>
+                                <option>MM/DD/YYYY</option>
+                                <option>YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Settings -->
+            <div id="business" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-store"></i>
+                    Business Settings
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Commission Structure</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Platform Commission (%)</label>
+                        <div class="commission-slider">
+                            <input type="range" min="0" max="30" value="12" id="commissionRange" oninput="updateCommission()">
+                            <span class="commission-value" id="commissionValue">12%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Fee (per tiffin)</label>
+                        <input type="number" value="30" placeholder="Enter delivery fee">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Order Value</label>
+                        <input type="number" value="100" placeholder="Enter minimum order value">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Free delivery above ₹500
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Apply tax on delivery fee
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Tax Settings</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>GST Rate (%)</label>
+                            <input type="number" value="18" placeholder="Enter GST rate">
+                        </div>
+                        <div class="form-group">
+                            <label>GST Number</label>
+                            <input type="text" value="27AABCU9603R1ZM" placeholder="Enter GST number">
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Include tax in prices
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Show tax breakdown to customers
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Student Discount</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Student Discount Percentage (%)</label>
+                        <input type="number" value="15" placeholder="Enter discount %">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Require student ID verification
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Allow discount on all plans
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shifts & Timing Settings -->
+            <div id="shifts" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-clock"></i>
+                    Shifts & Timing
+                </div>
+
+                <div class="shift-timing-card">
+                    <div class="shift-timing-header day">
+                        <i class="fas fa-sun"></i>
+                        <h3>Day Shift (Breakfast & Lunch)</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Breakfast Start Time</label>
+                            <input type="time" value="07:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Breakfast End Time</label>
+                            <input type="time" value="09:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Lunch Start Time</label>
+                            <input type="time" value="12:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Lunch End Time</label>
+                            <input type="time" value="15:00">
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Accept breakfast orders
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Accept lunch orders
+                        </label>
+                    </div>
+                </div>
+
+                <div class="shift-timing-card">
+                    <div class="shift-timing-header night">
+                        <i class="fas fa-moon"></i>
+                        <h3>Night Shift (Dinner)</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Dinner Start Time</label>
+                            <input type="time" value="18:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Dinner End Time</label>
+                            <input type="time" value="23:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Order Time</label>
+                            <input type="time" value="22:00">
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Accept dinner orders
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Weekend Special</h3>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Sunday special menu active
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Saturday special menu active
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Special Menu Description</label>
+                        <textarea rows="3">Special Sunday Brunch: Puri Bhaji, Aamras, Gulab Jamun</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Settings -->
+            <div id="payments" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    Payment Settings
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Payment Methods</h3>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Cash on Delivery
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Credit/Debit Cards
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> UPI (Google Pay, PhonePe, Paytm)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Net Banking
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Wallets
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Payment Gateway</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Gateway Provider</label>
+                        <select>
+                            <option selected>Razorpay</option>
+                            <option>Paytm</option>
+                            <option>CCAvenue</option>
+                            <option>Stripe</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <div class="api-key-display">
+                            <span>rzp_live_********************</span>
+                            <i class="fas fa-copy" onclick="copyToClipboard('API Key')"></i>
+                            <i class="fas fa-eye" onclick="toggleApiKey()"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>API Secret</label>
+                        <div class="api-key-display">
+                            <span>••••••••••••••••••••••••</span>
+                            <i class="fas fa-copy" onclick="copyToClipboard('API Secret')"></i>
+                            <i class="fas fa-eye" onclick="toggleApiKey()"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Payout Settings</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Provider Payout Schedule</label>
+                        <select>
+                            <option selected>Weekly (Every Monday)</option>
+                            <option>Bi-Weekly (1st and 15th)</option>
+                            <option>Monthly (1st of every month)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Payout Amount</label>
+                        <input type="number" value="1000" placeholder="Enter minimum payout">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Auto-process payouts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Send payout notifications to providers
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div id="notifications" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-bell"></i>
+                    Notification Settings
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Email Notifications</h3>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> New order alerts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> New complaint filed
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> New provider registration
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Payment received
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Daily summary report
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Weekly analytics report
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>SMS Notifications</h3>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Order status updates
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Delivery alerts to customers
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Payment confirmations
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Provider Notifications</h3>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Notify providers of new complaints
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Notify providers of payouts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Daily order summary to providers
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Settings -->
+            <div id="team" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-users-cog"></i>
+                    Team Management
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <button class="save-btn" onclick="addTeamMember()">
+                        <i class="fas fa-user-plus"></i>
+                        Add Team Member
+                    </button>
+                </div>
+
+                <div class="settings-card">
+                    <div class="team-member">
+                        <div class="member-info">
+                            <div class="member-avatar">AD</div>
+                            <div class="member-details">
+                                <h4>Admin User</h4>
+                                <span>admin@dabbas.com</span>
+                            </div>
+                        </div>
+                        <div class="member-role">Owner</div>
+                        <div class="member-actions">
+                            <button class="icon-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn" title="Permissions"><i class="fas fa-shield-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-info">
+                            <div class="member-avatar">MK</div>
+                            <div class="member-details">
+                                <h4>Manager Kumar</h4>
+                                <span>manager@dabbas.com</span>
+                            </div>
+                        </div>
+                        <div class="member-role">Manager</div>
+                        <div class="member-actions">
+                            <button class="icon-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn" title="Permissions"><i class="fas fa-shield-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-info">
+                            <div class="member-avatar">SP</div>
+                            <div class="member-details">
+                                <h4>Support Patel</h4>
+                                <span>support@dabbas.com</span>
+                            </div>
+                        </div>
+                        <div class="member-role">Support</div>
+                        <div class="member-actions">
+                            <button class="icon-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn" title="Permissions"><i class="fas fa-shield-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-info">
+                            <div class="member-avatar">FJ</div>
+                            <div class="member-details">
+                                <h4>Finance Jain</h4>
+                                <span>finance@dabbas.com</span>
+                            </div>
+                        </div>
+                        <div class="member-role">Finance</div>
+                        <div class="member-actions">
+                            <button class="icon-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn" title="Permissions"><i class="fas fa-shield-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Role Permissions</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Owner Access</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" checked disabled> Full platform access</label>
+                            <label class="checkbox-label"><input type="checkbox" checked disabled> User management</label>
+                            <label class="checkbox-label"><input type="checkbox" checked disabled> Payment settings</label>
+                            <label class="checkbox-label"><input type="checkbox" checked disabled> Analytics access</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Manager Access</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" checked> View dashboard</label>
+                            <label class="checkbox-label"><input type="checkbox" checked> Manage providers</label>
+                            <label class="checkbox-label"><input type="checkbox" checked> Handle complaints</label>
+                            <label class="checkbox-label"><input type="checkbox"> Payment processing</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div id="security" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Security Settings
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Change Password</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" placeholder="Confirm new password">
+                    </div>
+                    <button class="save-btn" style="width: auto;" onclick="changePassword()">
+                        Update Password
+                    </button>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Two-Factor Authentication</h3>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.5rem;">Enable 2FA for enhanced security</p>
+                            <p style="font-size: 0.9rem; color: #999;">Add an extra layer of security to your account</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="twoFactorToggle" onchange="toggleTwoFactor()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Session Management</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Session Timeout (minutes)</label>
+                        <input type="number" value="30" placeholder="Enter timeout">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Remember me on trusted devices
+                        </label>
+                    </div>
+                    <button class="reset-btn" style="margin-top: 1rem;" onclick="logoutAllDevices()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout All Devices
+                    </button>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>API Access</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <div class="api-key-display">
+                            <span>dab_api_live_********************</span>
+                            <i class="fas fa-copy" onclick="copyToClipboard('API Key')"></i>
+                            <i class="fas fa-sync-alt" onclick="regenerateApiKey()"></i>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Enable API access
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations Settings -->
+            <div id="integrations" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-plug"></i>
+                    Integrations
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Email Service</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Provider</label>
+                        <select>
+                            <option selected>SendGrid</option>
+                            <option>Mailchimp</option>
+                            <option>Amazon SES</option>
+                            <option>SMTP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" value="sg_api_****************">
+                    </div>
+                    <div class="form-group">
+                        <label>From Email</label>
+                        <input type="email" value="noreply@dabbas.com">
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>SMS Service</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>SMS Provider</label>
+                        <select>
+                            <option selected>Twilio</option>
+                            <option>Msg91</option>
+                            <option>TextLocal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Account SID</label>
+                        <input type="text" value="AC********************">
+                    </div>
+                    <div class="form-group">
+                        <label>Auth Token</label>
+                        <input type="password" value="********************">
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Maps Integration</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Google Maps API Key</label>
+                        <input type="text" value="AIzaSy********************">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Enable delivery tracking
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3>Analytics</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Google Analytics ID</label>
+                        <input type="text" value="UA-XXXXXXXXX-X">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Enable analytics tracking
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div id="activity" class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-history"></i>
+                    Activity Log
+                </div>
+
+                <div class="settings-card">
+                    <div class="activity-log">
+                        <div class="log-item">
+                            <div class="log-icon success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">Settings updated</div>
+                                <div class="log-time">Today, 10:30 AM</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon success">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">New team member added: Support Patel</div>
+                                <div class="log-time">Today, 09:15 AM</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">Failed login attempt</div>
+                                <div class="log-time">Yesterday, 11:45 PM</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon success">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">Payment settings updated</div>
+                                <div class="log-time">Yesterday, 04:30 PM</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon info">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">Data exported: Provider list</div>
+                                <div class="log-time">Yesterday, 02:15 PM</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon success">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">Commission structure updated to 12%</div>
+                                <div class="log-time">2 days ago</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon warning">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">Provider suspended: Dragon House</div>
+                                <div class="log-time">2 days ago</div>
+                            </div>
+                        </div>
+
+                        <div class="log-item">
+                            <div class="log-icon info">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-title">API key regenerated</div>
+                                <div class="log-time">3 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Logout</h2>
+                <button class="close-modal" onclick="closeLogoutModal()">&times;</button>
+            </div>
+            <p style="margin-bottom: 2rem; color: #666; text-align: center;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeLogoutModal()" class="btn-secondary">Cancel</button>
+                <button onclick="confirmLogout()" class="btn-primary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    <script>
+        // Toastr configuration
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Notification System
+        const notifications = {
+            items: [
+                {
+                    id: 1,
+                    title: 'Settings Updated',
+                    message: 'Commission rate changed to 12%',
+                    time: '10:30 AM',
+                    read: false
+                },
+                {
+                    id: 2,
+                    title: 'New Team Member',
+                    message: 'Support Patel added to team',
+                    time: '09:15 AM',
+                    read: false
+                },
+                {
+                    id: 3,
+                    title: 'API Key Regenerated',
+                    message: 'New API key created',
+                    time: 'Yesterday',
+                    read: true
+                }
+            ],
+            
+            updateUI: function() {
+                const unreadCount = this.items.filter(n => !n.read).length;
+                document.getElementById('notificationCount').textContent = unreadCount;
+                
+                const list = document.getElementById('notificationList');
+                list.innerHTML = this.items.slice(0, 5).map(notif => `
+                    <div class="notification-item ${notif.read ? '' : 'unread'}">
+                        <div class="notification-title">${notif.title}</div>
+                        <div class="notification-message">${notif.message}</div>
+                        <div class="notification-time">${notif.time}</div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        notifications.updateUI();
+
+        // Toggle notifications
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function markAllAsRead(event) {
+            event.stopPropagation();
+            notifications.items.forEach(n => n.read = true);
+            notifications.updateUI();
+        }
+
+        function viewAllNotifications(event) {
+            event.preventDefault();
+            switchSettings('activity');
+            document.getElementById('notificationDropdown').style.display = 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = event.target.closest('.notification-bell');
+            
+            if (!bell && dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Switch between settings sections
+        function switchSettings(section) {
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.settings-section').forEach(s => {
+                s.classList.remove('active');
+            });
+
+            event.target.closest('.settings-nav-item').classList.add('active');
+            document.getElementById(section).classList.add('active');
+        }
+
+        // Update commission value
+        function updateCommission() {
+            const range = document.getElementById('commissionRange');
+            const value = document.getElementById('commissionValue');
+            value.textContent = range.value + '%';
+        }
+
+        // Save settings
+        function saveSettings() {
+            toastr.success('Settings saved successfully!', 'Success');
+            
+            // Add to activity log
+            const logEntry = {
+                icon: 'success',
+                title: 'Settings updated',
+                time: 'Just now'
+            };
+            
+            // In real app, would save to backend
+            console.log('Settings saved');
+        }
+
+        // Reset settings
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default?')) {
+                toastr.warning('Settings reset to default', 'Reset');
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                toastr.success(`${text} copied to clipboard!`, 'Copied');
+            });
+        }
+
+        // Toggle API key visibility
+        function toggleApiKey() {
+            toastr.info('API key visibility toggled (demo only)', 'Demo');
+        }
+
+        // Regenerate API key
+        function regenerateApiKey() {
+            if (confirm('Are you sure you want to regenerate API key? This will invalidate the old key.')) {
+                toastr.warning('New API key generated', 'API Key');
+            }
+        }
+
+        // Add team member
+        function addTeamMember() {
+            toastr.info('Add team member form would open here', 'Demo');
+        }
+
+        // Change password
+        function changePassword() {
+            toastr.success('Password changed successfully!', 'Success');
+        }
+
+        // Toggle two-factor authentication
+        function toggleTwoFactor() {
+            const toggle = document.getElementById('twoFactorToggle');
+            if (toggle.checked) {
+                toastr.info('Two-factor authentication enabled', 'Security');
+            } else {
+                toastr.warning('Two-factor authentication disabled', 'Security');
+            }
+        }
+
+        // Logout all devices
+        function logoutAllDevices() {
+            if (confirm('Are you sure you want to logout from all devices?')) {
+                toastr.warning('Logged out from all other devices', 'Session');
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        });
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const logoutModal = document.getElementById('logoutModal');
+            if (event.target === logoutModal) {
+                logoutModal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

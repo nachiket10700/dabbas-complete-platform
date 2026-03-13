@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments Management - Dabba's Tiffin Service</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Toastr CSS for notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .date-time {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            color: #ff6b6b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .notification-header {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mark-all-read {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: #fff5f0;
+        }
+
+        .notification-item.unread {
+            background: #fff5f0;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-title i {
+            font-size: 0.9rem;
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .notification-footer {
+            padding: 0.5rem;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .notification-footer a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box i {
+            color: #999;
+            margin-right: 0.5rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b6b;
+        }
+
+        .export-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-sub.positive {
+            color: #4caf50;
+        }
+
+        .stat-sub.negative {
+            color: #f44336;
+        }
+
+        /* Payment Tabs */
+        .payment-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            width: fit-content;
+            flex-wrap: wrap;
+        }
+
+        .payment-tab {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-tab:hover {
+            color: #ff6b6b;
+        }
+
+        .payment-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .payment-tab .count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .summary-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-header i {
+            color: #ff6b6b;
+        }
+
+        .summary-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-details {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #f0f0f0;
+            display: none;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .apply-filter-btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .apply-filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Payments Table */
+        .payments-table {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .payment-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .payment-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .icon-subscription {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        .icon-payout {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+        }
+
+        .icon-refund {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+        }
+
+        .icon-fee {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .payment-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .payment-details span {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .badge {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge.refunded {
+            background: #e2d5f1;
+            color: #5a3e85;
+        }
+
+        .badge.subscription {
+            background: #ffe5b4;
+            color: #8b4513;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+
+        .amount.pending {
+            color: #ff9800;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .action-btn.approve:hover {
+            background: #4caf50;
+        }
+
+        .action-btn.reject:hover {
+            background: #f44336;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+        }
+
+        .page-btn:hover:not(.active) {
+            border-color: #ff6b6b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .payment-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .detail-value.completed {
+            color: #4caf50;
+        }
+
+        .detail-value.pending {
+            color: #ff9800;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            flex: 1;
+            padding: 1rem;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            flex: 1;
+            padding: 1rem;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-row {
+                flex-direction: column;
+            }
+            .payment-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="date-time" id="currentDateTime"></div>
+            
+            <!-- Notification Bell -->
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCount">0</span>
+                
+                <!-- Notification Dropdown -->
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <span>Payment Notifications</span>
+                        <span class="mark-all-read" onclick="markAllAsRead(event)">Mark all as read</span>
+                    </div>
+                    <div class="notification-list" id="notificationList">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                    <div class="notification-footer">
+                        <a href="#" onclick="viewAllNotifications(event)">View All</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-menu">
+                <div class="user-avatar">AD</div>
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="providers.html" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Providers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="customers.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link active">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="complaints.html" class="nav-link">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Complaints</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-credit-card" style="color: #ff6b6b;"></i>
+                Payments Management
+            </h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search transactions..." id="searchInput" onkeyup="searchPayments()">
+                </div>
+                <div class="filter-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </div>
+                <button class="export-btn" onclick="exportPayments()">
+                    <i class="fas fa-download"></i>
+                    <span>Export Report</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Revenue</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="totalRevenue">₹45,67,890</div>
+                <div class="stat-sub positive">
+                    <i class="fas fa-arrow-up"></i> +15.3% from last month
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Pending Payouts</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="pendingPayouts">₹8,34,500</div>
+                <div class="stat-sub negative">
+                    <i class="fas fa-exclamation-circle"></i> 23 providers waiting
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Platform Fee</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="platformFee">₹6,78,900</div>
+                <div class="stat-sub positive">
+                    <i class="fas fa-arrow-up"></i> 12% commission
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Refunds</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="refunds">₹45,670</div>
+                <div class="stat-sub negative">
+                    <i class="fas fa-arrow-down"></i> 2.3% of revenue
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <h3><i class="fas fa-sun"></i> Today's Collection</h3>
+                    <span class="badge completed">Day Shift</span>
+                </div>
+                <div class="summary-amount">₹1,45,678</div>
+                <div class="summary-details">
+                    <span>Orders: 234</span>
+                    <span>Avg: ₹622</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-header">
+                    <h3><i class="fas fa-moon"></i> Tonight's Collection</h3>
+                    <span class="badge processing">Night Shift</span>
+                </div>
+                <div class="summary-amount">₹78,450</div>
+                <div class="summary-details">
+                    <span>Orders: 156</span>
+                    <span>Avg: ₹503</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Tabs -->
+        <div class="payment-tabs">
+            <div class="payment-tab active" onclick="filterByTab('all')">
+                <i class="fas fa-list"></i> All Transactions
+                <span class="count" id="allCount">156</span>
+            </div>
+            <div class="payment-tab" onclick="filterByTab('subscription')">
+                <i class="fas fa-calendar-check"></i> Subscriptions
+                <span class="count" id="subscriptionCount">89</span>
+            </div>
+            <div class="payment-tab" onclick="filterByTab('payout')">
+                <i class="fas fa-money-bill-wave"></i> Provider Payouts
+                <span class="count" id="payoutCount">23</span>
+            </div>
+            <div class="payment-tab" onclick="filterByTab('refund')">
+                <i class="fas fa-undo-alt"></i> Refunds
+                <span class="count" id="refundCount">12</span>
+            </div>
+            <div class="payment-tab" onclick="filterByTab('fee')">
+                <i class="fas fa-percent"></i> Platform Fees
+                <span class="count" id="feeCount">32</span>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section" id="filtersSection">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <select class="filter-select" id="dateFilter">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Payment Type</label>
+                    <select class="filter-select" id="typeFilter">
+                        <option value="all">All Types</option>
+                        <option value="subscription">Subscription</option>
+                        <option value="payout">Provider Payout</option>
+                        <option value="refund">Refund</option>
+                        <option value="fee">Platform Fee</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Min Amount</label>
+                    <input type="number" class="filter-input" id="minAmount" placeholder="₹0">
+                </div>
+                <div class="filter-group">
+                    <label>Max Amount</label>
+                    <input type="number" class="filter-input" id="maxAmount" placeholder="₹Any">
+                </div>
+                <button class="apply-filter-btn" onclick="applyFilters()">
+                    <i class="fas fa-check"></i> Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="payments-table">
+            <table id="paymentsTable">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Date & Time</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsTableBody">
+                    <!-- Payment rows will be loaded here -->
+                </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <h3>No Transactions Found</h3>
+                <p>No payments match your current filter criteria.</p>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Payment Details Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-credit-card" style="color: #ff6b6b;"></i>
+                    Payment Details
+                </h2>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div id="paymentDetails"></div>
+        </div>
+    </div>
+
+    <!-- Process Payout Modal -->
+    <div id="payoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-money-bill-wave" style="color: #4caf50;"></i>
+                    Process Provider Payout
+                </h2>
+                <button class="close-modal" onclick="closePayoutModal()">&times;</button>
+            </div>
+            <div id="payoutDetails"></div>
+        </div>
+    </div>
+
+    <!-- Refund Modal -->
+    <div id="refundModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-undo-alt" style="color: #ff9800;"></i>
+                    Process Refund
+                </h2>
+                <button class="close-modal" onclick="closeRefundModal()">&times;</button>
+            </div>
+            <div id="refundDetails"></div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 1rem;">Confirm Logout</h3>
+            <p style="margin-bottom: 2rem; color: #666;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeLogoutModal()" class="btn-secondary">Cancel</button>
+                <button onclick="confirmLogout()" class="btn-primary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    <script>
+        // Toastr configuration
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "5000"
+        };
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Sample payments data
+        const payments = [
+            {
+                id: 'PAY001',
+                date: '2024-03-15',
+                time: '10:30 AM',
+                description: 'Subscription Payment - Rahul Sharma',
+                customer: 'Rahul Sharma',
+                type: 'subscription',
+                amount: 2400,
+                status: 'completed',
+                paymentMethod: 'UPI',
+                provider: 'Spice Kitchen',
+                plan: 'Monthly Lunch',
+                shift: 'day',
+                transactionId: 'TXN123456789'
+            },
+            {
+                id: 'PAY002',
+                date: '2024-03-15',
+                time: '09:45 AM',
+                description: 'Payout to Spice Kitchen',
+                provider: 'Spice Kitchen',
+                type: 'payout',
+                amount: 15000,
+                status: 'pending',
+                period: '1-15 Mar 2024',
+                orders: 18,
+                bankAccount: 'XXXX1234',
+                ifsc: 'SBIN001234'
+            },
+            {
+                id: 'PAY003',
+                date: '2024-03-14',
+                time: '08:15 PM',
+                description: 'Subscription Payment - Priya Patel',
+                customer: 'Priya Patel',
+                type: 'subscription',
+                amount: 3200,
+                status: 'completed',
+                paymentMethod: 'Credit Card',
+                provider: 'Punjab Grill',
+                plan: 'Monthly Both',
+                shift: 'both'
+            },
+            {
+                id: 'PAY004',
+                date: '2024-03-14',
+                time: '07:30 PM',
+                description: 'Refund for Order #ORD12340',
+                customer: 'Amit Kumar',
+                type: 'refund',
+                amount: 450,
+                status: 'completed',
+                reason: 'Item missing',
+                originalOrder: 'ORD12340',
+                refundMethod: 'Original Payment'
+            },
+            {
+                id: 'PAY005',
+                date: '2024-03-14',
+                time: '06:20 PM',
+                description: 'Payout to Punjab Grill',
+                provider: 'Punjab Grill',
+                type: 'payout',
+                amount: 25000,
+                status: 'processing',
+                period: '1-15 Mar 2024',
+                orders: 32
+            },
+            {
+                id: 'PAY006',
+                date: '2024-03-14',
+                time: '05:45 PM',
+                description: 'Subscription Payment - Infosys Ltd',
+                customer: 'Infosys Ltd',
+                type: 'subscription',
+                amount: 62500,
+                status: 'completed',
+                paymentMethod: 'Bank Transfer',
+                provider: 'Madras Cafe',
+                plan: 'Corporate Bulk',
+                shift: 'both'
+            },
+            {
+                id: 'PAY007',
+                date: '2024-03-14',
+                time: '04:10 PM',
+                description: 'Platform Fee Collection',
+                type: 'fee',
+                amount: 5678,
+                status: 'completed',
+                period: 'March 2024',
+                providers: 45
+            },
+            {
+                id: 'PAY008',
+                date: '2024-03-13',
+                time: '11:20 AM',
+                description: 'Payout to Dragon House',
+                provider: 'Dragon House',
+                type: 'payout',
+                amount: 8900,
+                status: 'failed',
+                reason: 'Bank details invalid',
+                period: 'Feb 2024'
+            }
+        ];
+
+        // Notification system
+        class NotificationSystem {
+            constructor() {
+                this.notifications = [];
+                this.loadNotifications();
+            }
+
+            loadNotifications() {
+                const saved = localStorage.getItem('paymentNotifications');
+                if (saved) {
+                    this.notifications = JSON.parse(saved);
+                } else {
+                    // Sample notifications
+                    this.notifications = [
+                        {
+                            id: 'NOTIF1',
+                            title: 'New Subscription Payment',
+                            message: 'Rahul Sharma paid ₹2,400 for monthly plan',
+                            time: '10:30 AM',
+                            read: false,
+                            type: 'payment'
+                        },
+                        {
+                            id: 'NOTIF2',
+                            title: 'Payout Request Pending',
+                            message: 'Spice Kitchen requested ₹15,000 payout',
+                            time: '09:45 AM',
+                            read: false,
+                            type: 'payout'
+                        },
+                        {
+                            id: 'NOTIF3',
+                            title: 'Refund Processed',
+                            message: '₹450 refunded to Amit Kumar',
+                            time: '07:30 PM',
+                            read: true,
+                            type: 'refund'
+                        }
+                    ];
+                }
+                this.updateUI();
+            }
+
+            saveNotifications() {
+                localStorage.setItem('paymentNotifications', JSON.stringify(this.notifications));
+            }
+
+            addNotification(notification) {
+                this.notifications.unshift({
+                    id: 'NOTIF' + Date.now(),
+                    ...notification,
+                    read: false,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
+                this.saveNotifications();
+                this.updateUI();
+                
+                // Show toast
+                toastr.info(notification.message, notification.title);
+            }
+
+            markAsRead(notificationId) {
+                const notif = this.notifications.find(n => n.id === notificationId);
+                if (notif) {
+                    notif.read = true;
+                    this.saveNotifications();
+                    this.updateUI();
+                }
+            }
+
+            markAllAsRead() {
+                this.notifications.forEach(n => n.read = true);
+                this.saveNotifications();
+                this.updateUI();
+            }
+
+            updateUI() {
+                // Update notification badge
+                const unreadCount = this.notifications.filter(n => !n.read).length;
+                document.getElementById('notificationCount').textContent = unreadCount;
+
+                // Update notification list
+                const list = document.getElementById('notificationList');
+                const recentNotifs = this.notifications.slice(0, 5);
+                
+                list.innerHTML = recentNotifs.map(notif => `
+                    <div class="notification-item ${notif.read ? '' : 'unread'}" 
+                         onclick="notifications.markAsRead('${notif.id}')">
+                        <div class="notification-title">
+                            <i class="fas ${notif.type === 'payment' ? 'fa-credit-card' : 
+                                          notif.type === 'payout' ? 'fa-money-bill-wave' : 
+                                          'fa-undo-alt'}" 
+                               style="color: #ff6b6b;"></i>
+                            ${notif.title}
+                        </div>
+                        <div class="notification-message">${notif.message}</div>
+                        <div class="notification-time">${notif.time}</div>
+                    </div>
+                `).join('');
+
+                if (recentNotifs.length === 0) {
+                    list.innerHTML = '<div style="padding: 1rem; text-align: center; color: #999;">No notifications</div>';
+                }
+            }
+        }
+
+        const notifications = new NotificationSystem();
+
+        // Toggle notifications
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function markAllAsRead(event) {
+            event.stopPropagation();
+            notifications.markAllAsRead();
+        }
+
+        function viewAllNotifications(event) {
+            event.preventDefault();
+            alert('View all notifications');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = event.target.closest('.notification-bell');
+            
+            if (!bell && dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Current filter state
+        let currentTab = 'all';
+        let searchTerm = '';
+        let advancedFilters = {
+            date: 'all',
+            type: 'all',
+            status: 'all',
+            minAmount: '',
+            maxAmount: ''
+        };
+
+        // Load payments table
+        function loadPayments() {
+            const filteredPayments = payments.filter(payment => {
+                // Tab filter
+                if (currentTab !== 'all' && payment.type !== currentTab) return false;
+
+                // Search term
+                if (searchTerm) {
+                    const searchable = `${payment.id} ${payment.description} ${payment.customer || ''} ${payment.provider || ''}`.toLowerCase();
+                    if (!searchable.includes(searchTerm.toLowerCase())) return false;
+                }
+
+                // Advanced filters
+                if (advancedFilters.type !== 'all' && payment.type !== advancedFilters.type) return false;
+                if (advancedFilters.status !== 'all' && payment.status !== advancedFilters.status) return false;
+                if (advancedFilters.minAmount && payment.amount < parseFloat(advancedFilters.minAmount)) return false;
+                if (advancedFilters.maxAmount && payment.amount > parseFloat(advancedFilters.maxAmount)) return false;
+
+                return true;
+            });
+
+            const tbody = document.getElementById('paymentsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const pagination = document.getElementById('pagination');
+
+            if (filteredPayments.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                pagination.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            pagination.style.display = 'flex';
+
+            tbody.innerHTML = filteredPayments.map(payment => {
+                let iconClass = '';
+                let typeIcon = '';
+                
+                if (payment.type === 'subscription') {
+                    iconClass = 'icon-subscription';
+                    typeIcon = 'fa-calendar-check';
+                } else if (payment.type === 'payout') {
+                    iconClass = 'icon-payout';
+                    typeIcon = 'fa-money-bill-wave';
+                } else if (payment.type === 'refund') {
+                    iconClass = 'icon-refund';
+                    typeIcon = 'fa-undo-alt';
+                } else {
+                    iconClass = 'icon-fee';
+                    typeIcon = 'fa-percent';
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="payment-info">
+                                <div class="payment-icon ${iconClass}">
+                                    <i class="fas ${typeIcon}"></i>
+                                </div>
+                                <div class="payment-details">
+                                    <h4>${payment.id}</h4>
+                                    <span>${payment.date} ${payment.time}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${payment.date}<br><span style="font-size:0.8rem; color:#999;">${payment.time}</span></td>
+                        <td>
+                            <div>
+                                <strong>${payment.description}</strong>
+                                ${payment.provider ? `<br><span style="font-size:0.85rem; color:#666;">${payment.provider}</span>` : ''}
+                                ${payment.customer ? `<br><span style="font-size:0.85rem; color:#666;">${payment.customer}</span>` : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <span style="text-transform:capitalize;">${payment.type}</span>
+                        </td>
+                        <td class="amount ${payment.status}">₹${payment.amount.toLocaleString()}</td>
+                        <td>
+                            <span class="badge ${payment.status}">${payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}</span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="viewPayment('${payment.id}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${payment.type === 'payout' && payment.status === 'pending' ? `
+                                    <button class="action-btn approve" onclick="processPayout('${payment.id}')" title="Process Payout">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                ` : ''}
+                                ${payment.type === 'refund' ? `
+                                    <button class="action-btn" onclick="processRefund('${payment.id}')" title="Process Refund">
+                                        <i class="fas fa-undo-alt"></i>
+                                    </button>
+                                ` : ''}
+                                <button class="action-btn" onclick="downloadReceipt('${payment.id}')" title="Download Receipt">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateFilterSummary(filteredPayments.length);
+        }
+
+        // Update filter summary
+        function updateFilterSummary(count) {
+            const headerTitle = document.querySelector('.page-header h1');
+            let filterText = `Showing ${count} transactions`;
+            
+            if (currentTab !== 'all') {
+                filterText += ` (${currentTab})`;
+            }
+            if (searchTerm) {
+                filterText += ` matching "${searchTerm}"`;
+            }
+            
+            const existingInfo = headerTitle.querySelector('small');
+            if (existingInfo) existingInfo.remove();
+            
+            const filterInfo = document.createElement('small');
+            filterInfo.style.fontSize = '0.9rem';
+            filterInfo.style.color = '#666';
+            filterInfo.style.marginLeft = '1rem';
+            filterInfo.style.fontWeight = 'normal';
+            filterInfo.textContent = filterText;
+            headerTitle.appendChild(filterInfo);
+        }
+
+        // Filter by tab
+        function filterByTab(tab) {
+            currentTab = tab;
+            
+            const tabs = document.querySelectorAll('.payment-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.closest('.payment-tab').classList.add('active');
+            
+            loadPayments();
+        }
+
+        // Search payments
+        function searchPayments() {
+            searchTerm = document.getElementById('searchInput').value;
+            loadPayments();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            advancedFilters = {
+                date: document.getElementById('dateFilter').value,
+                type: document.getElementById('typeFilter').value,
+                status: document.getElementById('statusFilter').value,
+                minAmount: document.getElementById('minAmount').value,
+                maxAmount: document.getElementById('maxAmount').value
+            };
+            loadPayments();
+            toggleFilters();
+        }
+
+        // Toggle filters
+        function toggleFilters() {
+            const filters = document.getElementById('filtersSection');
+            filters.style.display = filters.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // View payment details
+        function viewPayment(id) {
+            const payment = payments.find(p => p.id === id);
+            if (payment) {
+                let detailsHtml = `
+                    <div style="margin-bottom: 2rem;">
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Transaction ID</span>
+                            <span class="detail-value">${payment.id}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Date & Time</span>
+                            <span class="detail-value">${payment.date} ${payment.time}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Description</span>
+                            <span class="detail-value">${payment.description}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Type</span>
+                            <span class="detail-value">${payment.type}</span>
+                        </div>
+                `;
+
+                if (payment.type === 'subscription') {
+                    detailsHtml += `
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Customer</span>
+                            <span class="detail-value">${payment.customer}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Provider</span>
+                            <span class="detail-value">${payment.provider}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Plan</span>
+                            <span class="detail-value">${payment.plan}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Shift</span>
+                            <span class="detail-value">${payment.shift}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Payment Method</span>
+                            <span class="detail-value">${payment.paymentMethod}</span>
+                        </div>
+                    `;
+                } else if (payment.type === 'payout') {
+                    detailsHtml += `
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Provider</span>
+                            <span class="detail-value">${payment.provider}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Period</span>
+                            <span class="detail-value">${payment.period}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Orders</span>
+                            <span class="detail-value">${payment.orders}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Bank Account</span>
+                            <span class="detail-value">${payment.bankAccount || 'N/A'}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">IFSC Code</span>
+                            <span class="detail-value">${payment.ifsc || 'N/A'}</span>
+                        </div>
+                    `;
+                } else if (payment.type === 'refund') {
+                    detailsHtml += `
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Customer</span>
+                            <span class="detail-value">${payment.customer}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Original Order</span>
+                            <span class="detail-value">${payment.originalOrder}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Reason</span>
+                            <span class="detail-value">${payment.reason}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Refund Method</span>
+                            <span class="detail-value">${payment.refundMethod}</span>
+                        </div>
+                    `;
+                }
+
+                detailsHtml += `
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Amount</span>
+                            <span class="detail-value" style="font-size: 1.2rem; color: #ff6b6b;">₹${payment.amount.toLocaleString()}</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value"><span class="badge ${payment.status}">${payment.status}</span></span>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button onclick="closePaymentModal()" class="btn-secondary">Close</button>
+                        ${payment.type === 'payout' && payment.status === 'pending' ? 
+                            `<button onclick="processPayout('${payment.id}')" class="btn-success">Process Payout</button>` : ''}
+                        ${payment.type === 'subscription' ? 
+                            `<button onclick="downloadInvoice('${payment.id}')" class="btn-primary">Download Invoice</button>` : ''}
+                    </div>
+                `;
+                
+                document.getElementById('paymentDetails').innerHTML = detailsHtml;
+                document.getElementById('paymentModal').style.display = 'flex';
+            }
+        }
+
+        // Process payout
+        function processPayout(id) {
+            const payment = payments.find(p => p.id === id);
+            if (payment) {
+                const payoutHtml = `
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div style="width: 80px; height: 80px; background: #4caf50; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; margin: 0 auto 1rem;">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h3>Process Payout to ${payment.provider}</h3>
+                        <p style="color: #666;">Amount: ₹${payment.amount.toLocaleString()}</p>
+                    </div>
+
+                    <div style="background: #f8f9fc; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Provider:</span>
+                            <span style="font-weight: 600;">${payment.provider}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Period:</span>
+                            <span>${payment.period}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Orders:</span>
+                            <span>${payment.orders}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Bank Account:</span>
+                            <span>${payment.bankAccount || 'XXXX1234'}</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Payment Method</label>
+                        <select id="payoutMethod" style="width: 100%; padding: 1rem; border: 2px solid #f0f0f0; border-radius: 10px;">
+                            <option>Bank Transfer (NEFT/RTGS)</option>
+                            <option>UPI Transfer</option>
+                            <option>Cheque</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Transaction Reference (Optional)</label>
+                        <input type="text" id="txnRef" placeholder="Enter reference number" style="width: 100%; padding: 1rem; border: 2px solid #f0f0f0; border-radius: 10px;">
+                    </div>
+
+                    <div style="margin: 1rem 0; padding: 1rem; background: #fff3cd; border-radius: 10px;">
+                        <p style="color: #856404;">
+                            <i class="fas fa-info-circle"></i> 
+                            This will transfer ₹${payment.amount.toLocaleString()} to ${payment.provider}'s account.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button onclick="closePayoutModal()" class="btn-secondary">Cancel</button>
+                        <button onclick="confirmPayout('${payment.id}')" class="btn-success">Confirm Payout</button>
+                    </div>
+                `;
+                
+                document.getElementById('payoutDetails').innerHTML = payoutHtml;
+                document.getElementById('payoutModal').style.display = 'flex';
+            }
+        }
+
+        // Confirm payout
+        function confirmPayout(id) {
+            const method = document.getElementById('payoutMethod')?.value || 'Bank Transfer';
+            const txnRef = document.getElementById('txnRef')?.value || 'N/A';
+            
+            notifications.addNotification({
+                title: 'Payout Processed',
+                message: `₹${payments.find(p => p.id === id).amount.toLocaleString()} paid to provider`,
+                type: 'payout'
+            });
+
+            toastr.success(`Payout processed successfully via ${method}`, 'Success');
+            closePayoutModal();
+            closePaymentModal();
+        }
+
+        // Process refund
+        function processRefund(id) {
+            const payment = payments.find(p => p.id === id);
+            if (payment) {
+                const refundHtml = `
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div style="width: 80px; height: 80px; background: #ff9800; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; margin: 0 auto 1rem;">
+                            <i class="fas fa-undo-alt"></i>
+                        </div>
+                        <h3>Process Refund</h3>
+                        <p style="color: #666;">Order: ${payment.originalOrder}</p>
+                    </div>
+
+                    <div style="background: #f8f9fc; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Customer:</span>
+                            <span>${payment.customer}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Amount:</span>
+                            <span>₹${payment.amount}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Reason:</span>
+                            <span>${payment.reason}</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Refund Method</label>
+                        <select id="refundMethod" style="width: 100%; padding: 1rem; border: 2px solid #f0f0f0; border-radius: 10px;">
+                            <option>Original Payment Method</option>
+                            <option>Bank Transfer</option>
+                            <option>Wallet Credit</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button onclick="closeRefundModal()" class="btn-secondary">Cancel</button>
+                        <button onclick="confirmRefund('${payment.id}')" class="btn-warning">Process Refund</button>
+                    </div>
+                `;
+                
+                document.getElementById('refundDetails').innerHTML = refundHtml;
+                document.getElementById('refundModal').style.display = 'flex';
+            }
+        }
+
+        // Confirm refund
+        function confirmRefund(id) {
+            notifications.addNotification({
+                title: 'Refund Processed',
+                message: `₹${payments.find(p => p.id === id).amount.toLocaleString()} refunded to customer`,
+                type: 'refund'
+            });
+
+            toastr.success('Refund processed successfully', 'Success');
+            closeRefundModal();
+            closePaymentModal();
+        }
+
+        // Close modals
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function closePayoutModal() {
+            document.getElementById('payoutModal').style.display = 'none';
+        }
+
+        function closeRefundModal() {
+            document.getElementById('refundModal').style.display = 'none';
+        }
+
+        // Download receipt
+        function downloadReceipt(id) {
+            toastr.info(`Downloading receipt for transaction ${id}`, 'Download');
+        }
+
+        // Download invoice
+        function downloadInvoice(id) {
+            toastr.info(`Downloading invoice for transaction ${id}`, 'Download');
+        }
+
+        // Export payments
+        function exportPayments() {
+            toastr.success('Report exported successfully', 'Export');
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        });
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const paymentModal = document.getElementById('paymentModal');
+            const payoutModal = document.getElementById('payoutModal');
+            const refundModal = document.getElementById('refundModal');
+            const logoutModal = document.getElementById('logoutModal');
+            
+            if (event.target === paymentModal) paymentModal.style.display = 'none';
+            if (event.target === payoutModal) payoutModal.style.display = 'none';
+            if (event.target === refundModal) refundModal.style.display = 'none';
+            if (event.target === logoutModal) logoutModal.style.display = 'none';
+        }
+
+        // Initialize
+        loadPayments();
+
+        // Add sample notification on load
+        setTimeout(() => {
+            notifications.addNotification({
+                title: 'New Subscription Payment',
+                message: 'Rahul Sharma paid ₹2,400 for monthly plan',
+                type: 'payment'
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

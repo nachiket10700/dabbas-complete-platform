@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Orders - Dabba's Tiffin Service</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .date-time {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box i {
+            color: #999;
+            margin-right: 0.5rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b6b;
+        }
+
+        .export-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-sub.positive {
+            color: #4caf50;
+        }
+
+        .stat-sub.negative {
+            color: #f44336;
+        }
+
+        /* Date Selector */
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 2rem;
+        }
+
+        .date-nav-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .date-nav-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .current-date {
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Order Tabs */
+        .order-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            width: fit-content;
+            flex-wrap: wrap;
+        }
+
+        .order-tab {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-tab:hover {
+            color: #ff6b6b;
+        }
+
+        .order-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .order-tab .count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+
+        /* Shift Indicators */
+        .shift-badge {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .shift-day {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        .shift-night {
+            background: #cce5ff;
+            color: #2c3e50;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .summary-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-header i {
+            color: #ff6b6b;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .summary-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 4px;
+        }
+
+        /* Orders Table */
+        .orders-table {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .order-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .order-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .avatar-working {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        .avatar-student {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+        }
+
+        .avatar-corporate {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .order-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .order-details span {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .badge {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.preparing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .badge.ready {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.out-for-delivery {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .action-btn.track:hover {
+            background: #2196f3;
+        }
+
+        .action-btn.update:hover {
+            background: #ff9800;
+        }
+
+        /* Kitchen View */
+        .kitchen-view {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .kitchen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .kitchen-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .provider-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .provider-tab {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .provider-tab:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .provider-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .kitchen-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .kitchen-card {
+            background: #f8f9fc;
+            border-radius: 15px;
+            padding: 1rem;
+            border-left: 4px solid;
+        }
+
+        .kitchen-card.spice { border-left-color: #ff6b6b; }
+        .kitchen-card.punjab { border-left-color: #4ecdc4; }
+        .kitchen-card.madras { border-left-color: #f39c12; }
+        .kitchen-card.dragon { border-left-color: #9b59b6; }
+
+        .kitchen-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .kitchen-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .kitchen-progress {
+            margin-top: 0.5rem;
+        }
+
+        .small-progress {
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .small-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+        }
+
+        .page-btn:hover:not(.active) {
+            border-color: #ff6b6b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .order-detail-row {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-label {
+            width: 120px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .items-list {
+            margin: 1rem 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .kitchen-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .kitchen-grid {
+                grid-template-columns: 1fr;
+            }
+            .date-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="date-time" id="currentDateTime"></div>
+            <div class="user-menu">
+                <div class="user-avatar">AD</div>
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i>Dashboard</a></li>
+            <li class="nav-item"><a href="subscriptions.html" class="nav-link"><i class="fas fa-calendar-check"></i>Subscriptions</a></li>
+            <li class="nav-item"><a href="customers.html" class="nav-link"><i class="fas fa-users"></i>Customers</a></li>
+            <li class="nav-item"><a href="providers.html" class="nav-link"><i class="fas fa-store"></i>Providers</a></li>
+            <li class="nav-item"><a href="orders.html" class="nav-link active"><i class="fas fa-shopping-bag"></i>Daily Orders</a></li>
+            <li class="nav-item"><a href="menu.html" class="nav-link"><i class="fas fa-utensils"></i>Menu Planner</a></li>
+            <li class="nav-item"><a href="promotions.html" class="nav-link"><i class="fas fa-tags"></i>Promotions</a></li>
+            <li class="nav-item"><a href="delivery.html" class="nav-link"><i class="fas fa-truck"></i>Delivery Areas</a></li>
+            <li class="nav-item"><a href="payments.html" class="nav-link"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li class="nav-item"><a href="complaints.html" class="nav-link"><i class="fas fa-exclamation-circle"></i>Feedback</a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-shopping-bag" style="color: #ff6b6b;"></i>
+                Daily Orders
+            </h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search orders..." id="searchInput" onkeyup="searchOrders()">
+                </div>
+                <div class="filter-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </div>
+                <button class="export-btn" onclick="exportOrders()">
+                    <i class="fas fa-download"></i>
+                    <span>Export</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Today's Total</span>
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                </div>
+                <div class="stat-value" id="totalOrders">1,245</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +8% vs yesterday</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Day Shift</span>
+                    <div class="stat-icon"><i class="fas fa-sun"></i></div>
+                </div>
+                <div class="stat-value" id="dayOrders">845</div>
+                <div class="stat-sub">Breakfast: 320 | Lunch: 525</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Night Shift</span>
+                    <div class="stat-icon"><i class="fas fa-moon"></i></div>
+                </div>
+                <div class="stat-value" id="nightOrders">400</div>
+                <div class="stat-sub">Dinner: 400</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Pending</span>
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="stat-value" id="pendingOrders">156</div>
+                <div class="stat-sub negative">12% of total</div>
+            </div>
+        </div>
+
+        <!-- Date Selector -->
+        <div class="date-selector">
+            <button class="date-nav-btn" onclick="changeDate('prev')"><i class="fas fa-chevron-left"></i></button>
+            <div class="current-date">
+                <i class="fas fa-calendar-alt" style="color: #ff6b6b;"></i>
+                <span id="currentDate">Thursday, 15 March 2024</span>
+            </div>
+            <button class="date-nav-btn" onclick="changeDate('next')"><i class="fas fa-chevron-right"></i></button>
+            <button class="filter-btn" style="margin-left: auto;" onclick="goToToday()">Today</button>
+        </div>
+
+        <!-- Order Tabs with Counts -->
+        <div class="order-tabs">
+            <div class="order-tab active" onclick="filterByTab('all')">
+                <i class="fas fa-list"></i> All Orders <span class="count" id="allCount">1,245</span>
+            </div>
+            <div class="order-tab" onclick="filterByTab('confirmed')">
+                <i class="fas fa-check-circle"></i> Confirmed <span class="count" id="confirmedCount">423</span>
+            </div>
+            <div class="order-tab" onclick="filterByTab('preparing')">
+                <i class="fas fa-utensils"></i> Preparing <span class="count" id="preparingCount">356</span>
+            </div>
+            <div class="order-tab" onclick="filterByTab('ready')">
+                <i class="fas fa-box"></i> Ready <span class="count" id="readyCount">234</span>
+            </div>
+            <div class="order-tab" onclick="filterByTab('out-for-delivery')">
+                <i class="fas fa-truck"></i> Out for Delivery <span class="count" id="outCount">187</span>
+            </div>
+            <div class="order-tab" onclick="filterByTab('delivered')">
+                <i class="fas fa-check-double"></i> Delivered <span class="count" id="deliveredCount">45</span>
+            </div>
+            <div class="order-tab" onclick="filterByTab('cancelled')">
+                <i class="fas fa-times-circle"></i> Cancelled <span class="count" id="cancelledCount">0</span>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <!-- Day Shift Summary -->
+            <div class="summary-card">
+                <div class="summary-header">
+                    <h3><i class="fas fa-sun" style="color: #f39c12;"></i> Day Shift Progress</h3>
+                    <span class="shift-badge shift-day">7 AM - 3 PM</span>
+                </div>
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <div class="summary-label">Total</div>
+                        <div class="summary-value">845</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Delivered</div>
+                        <div class="summary-value">632</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Pending</div>
+                        <div class="summary-value">213</div>
+                    </div>
+                </div>
+                <div class="summary-progress">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Breakfast (320)</span>
+                        <span>75% delivered</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                        <span>Lunch (525)</span>
+                        <span>82% delivered</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 82%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Night Shift Summary -->
+            <div class="summary-card">
+                <div class="summary-header">
+                    <h3><i class="fas fa-moon" style="color: #2c3e50;"></i> Night Shift Progress</h3>
+                    <span class="shift-badge shift-night">6 PM - 11 PM</span>
+                </div>
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <div class="summary-label">Total</div>
+                        <div class="summary-value">400</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Delivered</div>
+                        <div class="summary-value">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Pending</div>
+                        <div class="summary-value">400</div>
+                    </div>
+                </div>
+                <div class="summary-progress">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Dinner (400)</span>
+                        <span>Starts at 6 PM</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; color: #ff6b6b;">
+                    <i class="fas fa-clock"></i> Prep starts in 2 hours
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table">
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Items</th>
+                        <th>Shift</th>
+                        <th>Provider</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Order rows will be loaded here -->
+                </tbody>
+            </table>
+
+            <!-- Empty State (hidden by default) -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <h3>No Orders Found</h3>
+                <p>No orders match your current filter.</p>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Kitchen View -->
+        <div class="kitchen-view">
+            <div class="kitchen-header">
+                <h3><i class="fas fa-store" style="color: #ff6b6b;"></i> Kitchen Status</h3>
+                <div class="provider-tabs">
+                    <div class="provider-tab active" onclick="filterKitchen('all')">All</div>
+                    <div class="provider-tab" onclick="filterKitchen('spice')">Spice Kitchen</div>
+                    <div class="provider-tab" onclick="filterKitchen('punjab')">Punjab Grill</div>
+                    <div class="provider-tab" onclick="filterKitchen('madras')">Madras Cafe</div>
+                    <div class="provider-tab" onclick="filterKitchen('dragon')">Dragon House</div>
+                </div>
+            </div>
+
+            <div class="kitchen-grid">
+                <div class="kitchen-card spice">
+                    <div class="kitchen-name">Spice Kitchen</div>
+                    <div class="kitchen-stats">
+                        <span>Total: 445</span>
+                        <span>Preparing: 123</span>
+                        <span>Ready: 89</span>
+                    </div>
+                    <div class="kitchen-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+                            <span>Progress</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="small-progress">
+                            <div class="small-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kitchen-card punjab">
+                    <div class="kitchen-name">Punjab Grill</div>
+                    <div class="kitchen-stats">
+                        <span>Total: 320</span>
+                        <span>Preparing: 98</span>
+                        <span>Ready: 67</span>
+                    </div>
+                    <div class="kitchen-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+                            <span>Progress</span>
+                            <span>52%</span>
+                        </div>
+                        <div class="small-progress">
+                            <div class="small-fill" style="width: 52%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kitchen-card madras">
+                    <div class="kitchen-name">Madras Cafe</div>
+                    <div class="kitchen-stats">
+                        <span>Total: 280</span>
+                        <span>Preparing: 76</span>
+                        <span>Ready: 54</span>
+                    </div>
+                    <div class="kitchen-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+                            <span>Progress</span>
+                            <span>46%</span>
+                        </div>
+                        <div class="small-progress">
+                            <div class="small-fill" style="width: 46%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kitchen-card dragon">
+                    <div class="kitchen-name">Dragon House</div>
+                    <div class="kitchen-stats">
+                        <span>Total: 200</span>
+                        <span>Preparing: 59</span>
+                        <span>Ready: 41</span>
+                    </div>
+                    <div class="kitchen-progress">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+                            <span>Progress</span>
+                            <span>50%</span>
+                        </div>
+                        <div class="small-progress">
+                            <div class="small-fill" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="close-modal" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div id="orderDetails"></div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Order Status</h2>
+                <button class="close-modal" onclick="closeUpdateModal()">&times;</button>
+            </div>
+            <div id="updateDetails"></div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 1rem;">Confirm Logout</h3>
+            <p style="margin-bottom: 2rem; color: #666;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeLogoutModal()" class="btn-secondary">Cancel</button>
+                <button onclick="confirmLogout()" class="btn-primary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Sample orders data
+        const orders = [
+            {
+                id: 'ORD001',
+                customer: 'Rahul Sharma',
+                customerType: 'working',
+                avatar: 'RS',
+                items: ['Chicken Biryani', 'Raita', 'Salad'],
+                shift: 'day',
+                provider: 'Spice Kitchen',
+                amount: 280,
+                status: 'confirmed',
+                time: '10:30 AM',
+                address: 'Andheri East, Mumbai'
+            },
+            {
+                id: 'ORD002',
+                customer: 'Priya Patel',
+                customerType: 'student',
+                avatar: 'PP',
+                items: ['Paneer Butter Masala', 'Butter Naan', 'Gulab Jamun'],
+                shift: 'night',
+                provider: 'Punjab Grill',
+                amount: 320,
+                status: 'preparing',
+                time: '07:15 PM',
+                address: 'VJTI Hostel, Matunga'
+            },
+            {
+                id: 'ORD003',
+                customer: 'Amit Kumar',
+                customerType: 'working',
+                avatar: 'AK',
+                items: ['Veg Biryani', 'Raita'],
+                shift: 'day',
+                provider: 'Madras Cafe',
+                amount: 220,
+                status: 'ready',
+                time: '12:45 PM',
+                address: 'Infosys, BKC'
+            },
+            {
+                id: 'ORD004',
+                customer: 'Neha Singh',
+                customerType: 'student',
+                avatar: 'NS',
+                items: ['Masala Dosa', 'Sambhar', 'Chutney'],
+                shift: 'night',
+                provider: 'Madras Cafe',
+                amount: 180,
+                status: 'out-for-delivery',
+                time: '08:30 PM',
+                address: 'SPIT College, Andheri'
+            },
+            {
+                id: 'ORD005',
+                customer: 'Infosys Ltd',
+                customerType: 'corporate',
+                avatar: 'IL',
+                items: ['Bulk Order - 25 Tiffins'],
+                shift: 'day',
+                provider: 'Spice Kitchen',
+                amount: 6250,
+                status: 'delivered',
+                time: '01:00 PM',
+                address: 'Infosys, BKC'
+            }
+        ];
+
+        // Current filter state
+        let currentFilter = 'all';
+        let searchTerm = '';
+
+        // Load orders table
+        function loadOrders() {
+            const filteredOrders = orders.filter(order => {
+                if (currentFilter !== 'all' && order.status !== currentFilter) return false;
+                if (searchTerm) {
+                    const searchable = `${order.id} ${order.customer} ${order.provider}`.toLowerCase();
+                    if (!searchable.includes(searchTerm.toLowerCase())) return false;
+                }
+                return true;
+            });
+
+            const tbody = document.getElementById('ordersTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredOrders.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = filteredOrders.map(order => {
+                let avatarClass = '';
+                if (order.customerType === 'working') avatarClass = 'avatar-working';
+                else if (order.customerType === 'student') avatarClass = 'avatar-student';
+                else avatarClass = 'avatar-corporate';
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="order-info">
+                                <div class="order-avatar ${avatarClass}">${order.avatar}</div>
+                                <div class="order-details">
+                                    <h4>${order.id}</h4>
+                                    <span>${order.time}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${order.customer}</td>
+                        <td><span class="badge" style="background: #e3f2fd;">${order.customerType}</span></td>
+                        <td>
+                            ${order.items.slice(0, 2).join(', ')}
+                            ${order.items.length > 2 ? ` +${order.items.length - 2}` : ''}
+                        </td>
+                        <td><span class="shift-badge shift-${order.shift}">${order.shift}</span></td>
+                        <td>${order.provider}</td>
+                        <td>₹${order.amount}</td>
+                        <td><span class="badge ${order.status}">${order.status.replace('-', ' ')}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="viewOrder('${order.id}')" title="View"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn track" onclick="trackOrder('${order.id}')" title="Track"><i class="fas fa-map-marker-alt"></i></button>
+                                <button class="action-btn update" onclick="updateStatus('${order.id}')" title="Update"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateFilterSummary(filteredOrders.length);
+        }
+
+        // Update filter summary
+        function updateFilterSummary(count) {
+            const headerTitle = document.querySelector('.page-header h1');
+            let filterText = `Showing ${count} orders`;
+            
+            if (currentFilter !== 'all') {
+                filterText += ` (${currentFilter})`;
+            }
+            if (searchTerm) {
+                filterText += ` matching "${searchTerm}"`;
+            }
+            
+            const existingInfo = headerTitle.querySelector('small');
+            if (existingInfo) existingInfo.remove();
+            
+            const filterInfo = document.createElement('small');
+            filterInfo.style.fontSize = '0.9rem';
+            filterInfo.style.color = '#666';
+            filterInfo.style.marginLeft = '1rem';
+            filterInfo.style.fontWeight = 'normal';
+            filterInfo.textContent = filterText;
+            headerTitle.appendChild(filterInfo);
+        }
+
+        // Filter by tab
+        function filterByTab(tab) {
+            currentFilter = tab;
+            
+            const tabs = document.querySelectorAll('.order-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.closest('.order-tab').classList.add('active');
+            
+            loadOrders();
+        }
+
+        // Search orders
+        function searchOrders() {
+            searchTerm = document.getElementById('searchInput').value;
+            loadOrders();
+        }
+
+        // Change date
+        function changeDate(direction) {
+            alert(`Loading ${direction} day orders`);
+        }
+
+        // Go to today
+        function goToToday() {
+            document.getElementById('currentDate').textContent = 'Thursday, 15 March 2024';
+            alert('Showing today\'s orders');
+        }
+
+        // View order details
+        function viewOrder(id) {
+            const order = orders.find(o => o.id === id);
+            if (order) {
+                const itemsHtml = order.items.map(item => `
+                    <div class="item-row">
+                        <span>${item}</span>
+                    </div>
+                `).join('');
+
+                const detailsHtml = `
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff6b6b, #ff8e8e); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.5rem;">
+                                ${order.avatar}
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.3rem;">${order.customer}</h3>
+                                <p style="color: #666;">${order.address}</p>
+                            </div>
+                        </div>
+
+                        <div class="order-detail-row">
+                            <span class="detail-label">Order ID</span>
+                            <span class="detail-value">${order.id}</span>
+                        </div>
+                        <div class="order-detail-row">
+                            <span class="detail-label">Time</span>
+                            <span class="detail-value">${order.time}</span>
+                        </div>
+                        <div class="order-detail-row">
+                            <span class="detail-label">Shift</span>
+                            <span class="detail-value"><span class="shift-badge shift-${order.shift}">${order.shift}</span></span>
+                        </div>
+                        <div class="order-detail-row">
+                            <span class="detail-label">Provider</span>
+                            <span class="detail-value">${order.provider}</span>
+                        </div>
+                        <div class="order-detail-row">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value"><span class="badge ${order.status}">${order.status}</span></span>
+                        </div>
+                        
+                        <h4 style="margin: 1rem 0;">Items</h4>
+                        <div class="items-list">
+                            ${itemsHtml}
+                            <div style="display: flex; justify-content: space-between; padding: 1rem 0; border-top: 2px solid #f0f0f0; margin-top: 1rem;">
+                                <strong>Total Amount</strong>
+                                <strong style="color: #ff6b6b;">₹${order.amount}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="closeOrderModal()" class="btn-secondary" style="flex: 1;">Close</button>
+                        <button onclick="updateStatus('${order.id}')" class="btn-primary" style="flex: 1;">Update Status</button>
+                    </div>
+                `;
+                
+                document.getElementById('orderDetails').innerHTML = detailsHtml;
+                document.getElementById('orderModal').style.display = 'flex';
+            }
+        }
+
+        // Track order
+        function trackOrder(id) {
+            alert(`Tracking order ${id}`);
+        }
+
+        // Update status
+        function updateStatus(id) {
+            const order = orders.find(o => o.id === id);
+            if (order) {
+                const updateHtml = `
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div style="width: 80px; height: 80px; background: #ff9800; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; margin: 0 auto 1rem;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <h3>Update Order Status</h3>
+                        <p style="color: #666;">Order #${order.id}</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Current Status</label>
+                        <div style="padding: 1rem; background: #f5f5f5; border-radius: 10px;">
+                            <span class="badge ${order.status}">${order.status}</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">New Status</label>
+                        <select id="newStatus" style="width: 100%; padding: 1rem; border: 2px solid #f0f0f0; border-radius: 10px;">
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="out-for-delivery">Out for Delivery</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div style="margin: 1rem 0; padding: 1rem; background: #f8f9fc; border-radius: 10px;">
+                        <p style="color: #666;">
+                            <i class="fas fa-info-circle"></i> 
+                            This will notify the customer about the status update.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="closeUpdateModal()" class="btn-secondary" style="flex: 1;">Cancel</button>
+                        <button onclick="confirmUpdate('${order.id}')" class="btn-primary" style="flex: 1;">Update</button>
+                    </div>
+                `;
+                
+                document.getElementById('updateDetails').innerHTML = updateHtml;
+                document.getElementById('updateModal').style.display = 'flex';
+            }
+        }
+
+        // Confirm update
+        function confirmUpdate(id) {
+            const newStatus = document.getElementById('newStatus')?.value || 'confirmed';
+            alert(`Order ${id} status updated to ${newStatus}`);
+            closeUpdateModal();
+            closeOrderModal();
+        }
+
+        // Filter kitchen
+        function filterKitchen(kitchen) {
+            const tabs = document.querySelectorAll('.provider-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log('Filtering kitchen:', kitchen);
+        }
+
+        // Close modals
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+
+        // Toggle filters
+        function toggleFilters() {
+            alert('Advanced filters coming soon!');
+        }
+
+        // Export orders
+        function exportOrders() {
+            alert('Exporting orders data...');
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        });
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const orderModal = document.getElementById('orderModal');
+            const updateModal = document.getElementById('updateModal');
+            const logoutModal = document.getElementById('logoutModal');
+            
+            if (event.target === orderModal) orderModal.style.display = 'none';
+            if (event.target === updateModal) updateModal.style.display = 'none';
+            if (event.target === logoutModal) logoutModal.style.display = 'none';
+        }
+
+        // Initialize
+        loadOrders();
+    </script>
+</body>
+</html>

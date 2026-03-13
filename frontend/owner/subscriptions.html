@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriptions - Dabba's Tiffin Service</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Copy ALL styles from your original dashboard */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .date-time {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box i {
+            color: #999;
+            margin-right: 0.5rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b6b;
+        }
+
+        .add-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-sub.positive {
+            color: #4caf50;
+        }
+
+        /* Customer & Provider Summary Cards */
+        .relation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .relation-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .relation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .relation-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .relation-header i {
+            color: #ff6b6b;
+        }
+
+        .relation-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .relation-item:last-child {
+            border-bottom: none;
+        }
+
+        .relation-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .relation-info {
+            flex: 1;
+        }
+
+        .relation-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .relation-meta {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .relation-count {
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        /* Tabs */
+        .subscription-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            width: fit-content;
+            flex-wrap: wrap;
+        }
+
+        .subscription-tab {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subscription-tab:hover {
+            color: #ff6b6b;
+        }
+
+        .subscription-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .subscription-tab .count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+
+        /* Table */
+        .subscriptions-table {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .customer-info, .provider-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .provider-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.expiring {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.day {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        .badge.night {
+            background: #cce5ff;
+            color: #2c3e50;
+        }
+
+        .badge.working {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .badge.student {
+            background: #f3e5f5;
+            color: #4a148c;
+        }
+
+        .badge.corporate {
+            background: #e8f5e8;
+            color: #1b5e20;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+        }
+
+        .page-btn:hover:not(.active) {
+            border-color: #ff6b6b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-label {
+            width: 120px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .relation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-actions {
+                flex-direction: column;
+            }
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="date-time" id="currentDateTime"></div>
+            <div class="user-menu">
+                <div class="user-avatar">AD</div>
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="subscriptions.html" class="nav-link active">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Subscriptions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="customers.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="providers.html" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Providers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Daily Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="menu.html" class="nav-link">
+                    <i class="fas fa-utensils"></i>
+                    <span>Menu Planner</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="delivery.html" class="nav-link">
+                    <i class="fas fa-truck"></i>
+                    <span>Delivery Areas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="complaints.html" class="nav-link">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Feedback</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Subscription Management</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search by customer or provider..." id="searchInput">
+                </div>
+                <div class="filter-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </div>
+                <button class="add-btn" onclick="openAddSubscriptionModal()">
+                    <i class="fas fa-plus"></i>
+                    <span>New Subscription</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Subscriptions</span>
+                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                </div>
+                <div class="stat-value">3,456</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +145 this month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Active Customers</span>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="stat-value">2,845</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +89 new</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Active Providers</span>
+                    <div class="stat-icon"><i class="fas fa-store"></i></div>
+                </div>
+                <div class="stat-value">18</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> 12 kitchens</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Monthly Revenue</span>
+                    <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                </div>
+                <div class="stat-value">₹24.5L</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +15.3%</div>
+            </div>
+        </div>
+
+        <!-- Customer & Provider Relationship Summary -->
+        <div class="relation-grid">
+            <!-- Top Customers by Subscription -->
+            <div class="relation-card">
+                <div class="relation-header">
+                    <h3><i class="fas fa-crown" style="color: #ffd700;"></i> Top Customers by Subscription</h3>
+                    <a href="customers.html" class="view-all" style="color: #ff6b6b; text-decoration: none;">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar">RS</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Rahul Sharma</div>
+                        <div class="relation-meta">Working Professional • Infosys</div>
+                    </div>
+                    <div class="relation-count">3 subs</div>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar">PP</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Priya Patel</div>
+                        <div class="relation-meta">Student • VJTI (15% off)</div>
+                    </div>
+                    <div class="relation-count">2 subs</div>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar">AK</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Amit Kumar</div>
+                        <div class="relation-meta">Working Professional • TCS</div>
+                    </div>
+                    <div class="relation-count">2 subs</div>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar">IL</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Infosys Ltd</div>
+                        <div class="relation-meta">Corporate • 25 employees</div>
+                    </div>
+                    <div class="relation-count">1 bulk</div>
+                </div>
+            </div>
+
+            <!-- Top Providers by Subscription -->
+            <div class="relation-card">
+                <div class="relation-header">
+                    <h3><i class="fas fa-fire" style="color: #ff6b6b;"></i> Top Providers by Volume</h3>
+                    <a href="providers.html" class="view-all" style="color: #ff6b6b; text-decoration: none;">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">SK</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Spice Kitchen</div>
+                        <div class="relation-meta">North Indian • 4.5 ⭐</div>
+                    </div>
+                    <div class="relation-count">1,245 tiffins</div>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">PG</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Punjab Grill</div>
+                        <div class="relation-meta">North Indian • 4.8 ⭐</div>
+                    </div>
+                    <div class="relation-count">987 tiffins</div>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">MC</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Madras Cafe</div>
+                        <div class="relation-meta">South Indian • 4.3 ⭐</div>
+                    </div>
+                    <div class="relation-count">756 tiffins</div>
+                </div>
+                <div class="relation-item">
+                    <div class="relation-avatar" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">DH</div>
+                    <div class="relation-info">
+                        <div class="relation-name">Dragon House</div>
+                        <div class="relation-meta">Chinese • 4.2 ⭐</div>
+                    </div>
+                    <div class="relation-count">468 tiffins</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Tabs with Counts -->
+        <div class="subscription-tabs">
+            <div class="subscription-tab active" onclick="filterByType('all')">
+                <i class="fas fa-list"></i> All <span class="count" id="allCount">3,456</span>
+            </div>
+            <div class="subscription-tab" onclick="filterByType('working')">
+                <i class="fas fa-briefcase"></i> Working <span class="count" id="workingCount">1,845</span>
+            </div>
+            <div class="subscription-tab" onclick="filterByType('student')">
+                <i class="fas fa-user-graduate"></i> Student <span class="count" id="studentCount">1,234</span>
+            </div>
+            <div class="subscription-tab" onclick="filterByType('corporate')">
+                <i class="fas fa-building"></i> Corporate <span class="count" id="corporateCount">377</span>
+            </div>
+            <div class="subscription-tab" onclick="filterByType('expiring')">
+                <i class="fas fa-clock"></i> Expiring Soon <span class="count" id="expiringCount">89</span>
+            </div>
+        </div>
+
+        <!-- Subscriptions Table - Shows Customer, Provider, and Subscription Details -->
+        <div class="subscriptions-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Provider/Kitchen</th>
+                        <th>Plan</th>
+                        <th>Shift</th>
+                        <th>Start Date</th>
+                        <th>Valid Till</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="subscriptionsTableBody">
+                    <!-- Subscription rows will be loaded here -->
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Subscription Details Modal -->
+    <div id="subscriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Subscription Details</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="subscriptionDetails"></div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 1rem;">Confirm Logout</h3>
+            <p style="margin-bottom: 2rem; color: #666;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeLogoutModal()" class="btn-secondary">Cancel</button>
+                <button onclick="confirmLogout()" class="btn-primary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Sample subscription data linking customers and providers
+        const subscriptions = [
+            {
+                id: 'SUB001',
+                customer: { name: 'Rahul Sharma', type: 'working', company: 'Infosys', avatar: 'RS' },
+                provider: { name: 'Spice Kitchen', cuisine: 'North Indian', avatar: 'SK', rating: 4.5 },
+                plan: 'Monthly Lunch',
+                shift: 'day',
+                startDate: '15 Feb 2024',
+                endDate: '15 Mar 2024',
+                amount: 2400,
+                status: 'active',
+                items: ['4 Roti', 'Mix Veg', 'Dal', 'Rice', 'Salad']
+            },
+            {
+                id: 'SUB002',
+                customer: { name: 'Priya Patel', type: 'student', college: 'VJTI', avatar: 'PP' },
+                provider: { name: 'Punjab Grill', cuisine: 'North Indian', avatar: 'PG', rating: 4.8 },
+                plan: 'Weekly Dinner',
+                shift: 'night',
+                startDate: '10 Mar 2024',
+                endDate: '17 Mar 2024',
+                amount: 890,
+                status: 'expiring',
+                items: ['3 Roti', 'Paneer Masala', 'Rice', 'Salad']
+            },
+            {
+                id: 'SUB003',
+                customer: { name: 'Infosys Ltd', type: 'corporate', employees: 25, avatar: 'IL' },
+                provider: { name: 'Madras Cafe', cuisine: 'South Indian', avatar: 'MC', rating: 4.3 },
+                plan: 'Bulk Corporate',
+                shift: 'both',
+                startDate: '01 Mar 2024',
+                endDate: '31 Mar 2024',
+                amount: 62500,
+                status: 'active',
+                items: ['Custom Menu per day']
+            },
+            {
+                id: 'SUB004',
+                customer: { name: 'Amit Kumar', type: 'working', company: 'TCS', avatar: 'AK' },
+                provider: { name: 'Spice Kitchen', cuisine: 'North Indian', avatar: 'SK', rating: 4.5 },
+                plan: 'Monthly Both',
+                shift: 'both',
+                startDate: '01 Mar 2024',
+                endDate: '31 Mar 2024',
+                amount: 4500,
+                status: 'active',
+                items: ['Breakfast + Lunch + Dinner']
+            },
+            {
+                id: 'SUB005',
+                customer: { name: 'Neha Singh', type: 'student', college: 'SPIT', avatar: 'NS' },
+                provider: { name: 'Dragon House', cuisine: 'Chinese', avatar: 'DH', rating: 4.2 },
+                plan: 'Monthly Dinner',
+                shift: 'night',
+                startDate: '05 Mar 2024',
+                endDate: '05 Apr 2024',
+                amount: 2800,
+                status: 'active',
+                items: ['Noodles', 'Manchurian', 'Fried Rice']
+            }
+        ];
+
+        // Load subscriptions table
+        function loadSubscriptions() {
+            const tbody = document.getElementById('subscriptionsTableBody');
+            tbody.innerHTML = subscriptions.map(sub => {
+                const customerTypeClass = sub.customer.type === 'working' ? 'working' : 
+                                         sub.customer.type === 'student' ? 'student' : 'corporate';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="customer-info">
+                                <div class="customer-avatar">${sub.customer.avatar}</div>
+                                <div>
+                                    <div>${sub.customer.name}</div>
+                                    <small style="color: #999;">
+                                        ${sub.customer.type === 'working' ? sub.customer.company : 
+                                          sub.customer.type === 'student' ? sub.customer.college : 
+                                          `${sub.customer.employees} employees`}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge ${customerTypeClass}">${sub.customer.type}</span></td>
+                        <td>
+                            <div class="provider-info">
+                                <div class="provider-avatar">${sub.provider.avatar}</div>
+                                <div>
+                                    <div>${sub.provider.name}</div>
+                                    <small style="color: #999;">${sub.provider.rating} ⭐ • ${sub.provider.cuisine}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${sub.plan}</td>
+                        <td><span class="badge ${sub.shift}">${sub.shift}</span></td>
+                        <td>${sub.startDate}</td>
+                        <td>${sub.endDate}</td>
+                        <td>₹${sub.amount.toLocaleString()}</td>
+                        <td><span class="badge ${sub.status}">${sub.status}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="viewSubscription('${sub.id}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="editSubscription('${sub.id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn" onclick="viewCustomer('${sub.customer.name}')" title="View Customer">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <button class="action-btn" onclick="viewProvider('${sub.provider.name}')" title="View Provider">
+                                    <i class="fas fa-store"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // View subscription details
+        function viewSubscription(id) {
+            const sub = subscriptions.find(s => s.id === id);
+            if (sub) {
+                const itemsList = sub.items.map(item => `<li>• ${item}</li>`).join('');
+                
+                const detailsHtml = `
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 2rem; margin-bottom: 1.5rem;">
+                            <div style="text-align: center;">
+                                <div class="customer-avatar" style="width: 60px; height: 60px; margin: 0 auto;">${sub.customer.avatar}</div>
+                                <p style="margin-top: 0.5rem; font-weight: 600;">Customer</p>
+                                <p>${sub.customer.name}</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <div class="provider-avatar" style="width: 60px; height: 60px; margin: 0 auto;">${sub.provider.avatar}</div>
+                                <p style="margin-top: 0.5rem; font-weight: 600;">Provider</p>
+                                <p>${sub.provider.name}</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <span class="detail-label">Subscription ID</span>
+                            <span class="detail-value">${sub.id}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Plan</span>
+                            <span class="detail-value">${sub.plan}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Shift</span>
+                            <span class="detail-value">${sub.shift}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Duration</span>
+                            <span class="detail-value">${sub.startDate} to ${sub.endDate}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Amount</span>
+                            <span class="detail-value">₹${sub.amount}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value"><span class="badge ${sub.status}">${sub.status}</span></span>
+                        </div>
+                        
+                        <h4 style="margin: 1rem 0 0.5rem;">Menu Items</h4>
+                        <ul style="list-style: none; background: #f8f9fc; padding: 1rem; border-radius: 10px;">
+                            ${itemsList}
+                        </ul>
+                    </div>
+                    
+                    <div class="modal-footer" style="display: flex; gap: 1rem;">
+                        <button onclick="closeModal()" class="btn-secondary">Close</button>
+                        <button onclick="editSubscription('${sub.id}')" class="btn-primary">Edit</button>
+                    </div>
+                `;
+                
+                document.getElementById('subscriptionDetails').innerHTML = detailsHtml;
+                document.getElementById('subscriptionModal').style.display = 'flex';
+            }
+        }
+
+        // Filter by type
+        function filterByType(type) {
+            const tabs = document.querySelectorAll('.subscription-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.subscription-tab').classList.add('active');
+            console.log('Filtering by:', type);
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('subscriptionModal').style.display = 'none';
+        }
+
+        // Edit subscription
+        function editSubscription(id) {
+            alert(`Edit subscription ${id}`);
+            closeModal();
+        }
+
+        // View customer
+        function viewCustomer(name) {
+            alert(`View customer: ${name}`);
+        }
+
+        // View provider
+        function viewProvider(name) {
+            alert(`View provider: ${name}`);
+        }
+
+        // Toggle filters
+        function toggleFilters() {
+            alert('Filter options coming soon!');
+        }
+
+        // Open add subscription modal
+        function openAddSubscriptionModal() {
+            alert('Add new subscription form');
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        });
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('subscriptionModal');
+            const logoutModal = document.getElementById('logoutModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+            if (event.target === logoutModal) {
+                logoutModal.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        loadSubscriptions();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Planner - Dabba's Tiffin Service</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Copy ALL styles from your original dashboard */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #2d2d2d;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .date-time {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #f0f0f0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            color: #ff6b6b;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box i {
+            color: #999;
+            margin-right: 0.5rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b6b;
+        }
+
+        .add-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff5f0, #ffeae4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-sub.positive {
+            color: #4caf50;
+        }
+
+        /* Shift Tabs */
+        .shift-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid #f0f0f0;
+            width: fit-content;
+        }
+
+        .shift-tab {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shift-tab:hover {
+            color: #ff6b6b;
+        }
+
+        .shift-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .shift-tab.day i {
+            color: #f39c12;
+        }
+
+        .shift-tab.night i {
+            color: #2c3e50;
+        }
+
+        .shift-tab.active i {
+            color: white;
+        }
+
+        /* Week Navigation */
+        .week-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 20px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .week-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .week-nav-btn {
+            padding: 0.5rem 1.5rem;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .week-nav-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-3px);
+            border-color: #ff6b6b;
+        }
+
+        .day-card.today {
+            border-color: #ff6b6b;
+            background: #fff5f0;
+        }
+
+        .day-card.sunday {
+            background: #fff5f0;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: #f8f9fc;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .day-header.sunday {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .day-name {
+            font-size: 1rem;
+        }
+
+        .day-date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .day-header.sunday .day-date {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .meal-section {
+            margin: 1rem 0;
+        }
+
+        .meal-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .meal-title i {
+            font-size: 0.8rem;
+        }
+
+        .meal-items {
+            list-style: none;
+        }
+
+        .meal-item {
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+
+        .meal-item:last-child {
+            border-bottom: none;
+        }
+
+        .meal-item i {
+            color: #4caf50;
+            font-size: 0.7rem;
+        }
+
+        .special-item {
+            background: #fff3cd;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: #856404;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .edit-day-btn {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 1rem;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-day-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Provider Menu Section */
+        .provider-menu-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 2rem;
+        }
+
+        .provider-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .provider-tab {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .provider-tab:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .provider-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .provider-tab img {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+
+        /* Menu Items Table */
+        .menu-items-table {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid #f0f0f0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-category {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .item-category.veg {
+            background: #e8f5e8;
+            color: #1b5e20;
+        }
+
+        .item-category.nonveg {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .status-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .status-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            padding: 1rem;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .menu-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .week-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">Dabba<span>'s</span></a>
+        <div class="nav-right">
+            <div class="date-time" id="currentDateTime"></div>
+            <div class="user-menu">
+                <div class="user-avatar">AD</div>
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i>Dashboard</a></li>
+            <li class="nav-item"><a href="subscriptions.html" class="nav-link"><i class="fas fa-calendar-check"></i>Subscriptions</a></li>
+            <li class="nav-item"><a href="customers.html" class="nav-link"><i class="fas fa-users"></i>Customers</a></li>
+            <li class="nav-item"><a href="providers.html" class="nav-link"><i class="fas fa-store"></i>Providers</a></li>
+            <li class="nav-item"><a href="orders.html" class="nav-link"><i class="fas fa-shopping-bag"></i>Daily Orders</a></li>
+            <li class="nav-item"><a href="menu.html" class="nav-link active"><i class="fas fa-utensils"></i>Menu Planner</a></li>
+            <li class="nav-item"><a href="promotions.html" class="nav-link"><i class="fas fa-tags"></i>Promotions</a></li>
+            <li class="nav-item"><a href="delivery.html" class="nav-link"><i class="fas fa-truck"></i>Delivery Areas</a></li>
+            <li class="nav-item"><a href="payments.html" class="nav-link"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li class="nav-item"><a href="complaints.html" class="nav-link"><i class="fas fa-exclamation-circle"></i>Feedback</a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-utensils" style="color: #ff6b6b;"></i>
+                Menu Planner
+            </h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search menu items...">
+                </div>
+                <div class="filter-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </div>
+                <button class="add-btn" onclick="openAddItemModal()">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Item</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Items</span>
+                    <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+                </div>
+                <div class="stat-value">48</div>
+                <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +5 this week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Active Today</span>
+                    <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                </div>
+                <div class="stat-value">24</div>
+                <div class="stat-sub">Day: 14 | Night: 10</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Veg Items</span>
+                    <div class="stat-icon"><i class="fas fa-leaf"></i></div>
+                </div>
+                <div class="stat-value">32</div>
+                <div class="stat-sub">67% of menu</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Non-Veg Items</span>
+                    <div class="stat-icon"><i class="fas fa-drumstick-bite"></i></div>
+                </div>
+                <div class="stat-value">16</div>
+                <div class="stat-sub">33% of menu</div>
+            </div>
+        </div>
+
+        <!-- Shift Tabs -->
+        <div class="shift-tabs">
+            <div class="shift-tab day active" onclick="switchShift('day')">
+                <i class="fas fa-sun"></i> Day Menu (7 AM - 3 PM)
+            </div>
+            <div class="shift-tab night" onclick="switchShift('night')">
+                <i class="fas fa-moon"></i> Night Menu (6 PM - 11 PM)
+            </div>
+        </div>
+
+        <!-- Week Navigation -->
+        <div class="week-nav">
+            <button class="week-nav-btn" onclick="changeWeek('prev')"><i class="fas fa-chevron-left"></i> Previous Week</button>
+            <div class="week-title">
+                <i class="fas fa-calendar-alt" style="color: #ff6b6b;"></i> 
+                Week of March 11 - March 17, 2024
+            </div>
+            <button class="week-nav-btn" onclick="changeWeek('next')">Next Week <i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <!-- Weekly Menu Grid -->
+        <div class="menu-grid" id="dayMenu">
+            <!-- Monday -->
+            <div class="day-card today">
+                <div class="day-header">
+                    <span class="day-name">MON</span>
+                    <span class="day-date">11 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-sun" style="color: #f39c12;"></i> Breakfast</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Poha (320 tiffins)</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Upma (180 tiffins)</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: #ff6b6b;"></i> Lunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Chole Bhature</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Rice</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Salad</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Pickle</li>
+                    </ul>
+                </div>
+                <div class="special-item"><i class="fas fa-star"></i> Special: Papad</div>
+                <button class="edit-day-btn" onclick="editDay('Monday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-name">TUE</span>
+                    <span class="day-date">12 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-sun" style="color: #f39c12;"></i> Breakfast</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Aloo Paratha (280 tiffins)</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Dahi (180 tiffins)</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: #ff6b6b;"></i> Lunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Rajma Chawal</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Salad</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Onion</li>
+                    </ul>
+                </div>
+                <div class="special-item"><i class="fas fa-star"></i> Special: Boondi Raita</div>
+                <button class="edit-day-btn" onclick="editDay('Tuesday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-name">WED</span>
+                    <span class="day-date">13 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-sun" style="color: #f39c12;"></i> Breakfast</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Sandwich (240 tiffins)</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Juice (120 tiffins)</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: #ff6b6b;"></i> Lunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Pav Bhaji</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Salad</li>
+                    </ul>
+                </div>
+                <div class="special-item"><i class="fas fa-star"></i> Special: Ice Cream</div>
+                <button class="edit-day-btn" onclick="editDay('Wednesday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+
+            <!-- Thursday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-name">THU</span>
+                    <span class="day-date">14 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-sun" style="color: #f39c12;"></i> Breakfast</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Idli (310 tiffins)</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Sambhar</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: #ff6b6b;"></i> Lunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Veg Biryani</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Raita</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Boiled Egg</li>
+                    </ul>
+                </div>
+                <div class="special-item"><i class="fas fa-star"></i> Special: Gulab Jamun</div>
+                <button class="edit-day-btn" onclick="editDay('Thursday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+
+            <!-- Friday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-name">FRI</span>
+                    <span class="day-date">15 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-sun" style="color: #f39c12;"></i> Breakfast</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Dosa (290 tiffins)</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Chutney</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: #ff6b6b;"></i> Lunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Kadhai Paneer</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Butter Naan</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Salad</li>
+                    </ul>
+                </div>
+                <div class="special-item"><i class="fas fa-star"></i> Special: Firni</div>
+                <button class="edit-day-btn" onclick="editDay('Friday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+
+            <!-- Saturday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-name">SAT</span>
+                    <span class="day-date">16 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-sun" style="color: #f39c12;"></i> Breakfast</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Chole Kulche (340 tiffins)</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: #ff6b6b;"></i> Lunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Chana Masala</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Puri</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Halwa</li>
+                    </ul>
+                </div>
+                <div class="special-item"><i class="fas fa-star"></i> Special: Sweet</div>
+                <button class="edit-day-btn" onclick="editDay('Saturday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+
+            <!-- Sunday -->
+            <div class="day-card sunday">
+                <div class="day-header sunday">
+                    <span class="day-name">SUN</span>
+                    <span class="day-date">17 Mar</span>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-utensils" style="color: white;"></i> Brunch</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Puri Bhaji (450 tiffins)</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Aamras</li>
+                    </ul>
+                </div>
+                <div class="meal-section">
+                    <div class="meal-title"><i class="fas fa-moon" style="color: white;"></i> Dinner</div>
+                    <ul class="meal-items">
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Biryani</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Raita</li>
+                        <li class="meal-item"><i class="fas fa-check-circle"></i> Gulab Jamun</li>
+                    </ul>
+                </div>
+                <div class="special-item" style="background: #ffd700; color: #000;"><i class="fas fa-crown"></i> Sunday Special</div>
+                <button class="edit-day-btn" onclick="editDay('Sunday')"><i class="fas fa-edit"></i> Edit Menu</button>
+            </div>
+        </div>
+
+        <!-- Provider Menu Section -->
+        <div class="provider-menu-section">
+            <h3 style="margin-bottom: 1rem;">Provider-wise Menu</h3>
+            <div class="provider-tabs">
+                <div class="provider-tab active" onclick="switchProvider('all')">All Providers</div>
+                <div class="provider-tab" onclick="switchProvider('spice')">
+                    <span>Spice Kitchen</span>
+                </div>
+                <div class="provider-tab" onclick="switchProvider('punjab')">
+                    <span>Punjab Grill</span>
+                </div>
+                <div class="provider-tab" onclick="switchProvider('madras')">
+                    <span>Madras Cafe</span>
+                </div>
+                <div class="provider-tab" onclick="switchProvider('dragon')">
+                    <span>Dragon House</span>
+                </div>
+            </div>
+
+            <!-- Menu Items Table -->
+            <div class="menu-items-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Provider</th>
+                            <th>Price</th>
+                            <th>Prep Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chicken Biryani</td>
+                            <td><span class="item-category nonveg">Non-Veg</span></td>
+                            <td>Lunch/Dinner</td>
+                            <td>Spice Kitchen</td>
+                            <td>₹280</td>
+                            <td>25 min</td>
+                            <td>
+                                <label class="status-toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-copy"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Paneer Butter Masala</td>
+                            <td><span class="item-category veg">Veg</span></td>
+                            <td>Lunch/Dinner</td>
+                            <td>Punjab Grill</td>
+                            <td>₹240</td>
+                            <td>20 min</td>
+                            <td>
+                                <label class="status-toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-copy"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Masala Dosa</td>
+                            <td><span class="item-category veg">Veg</span></td>
+                            <td>Breakfast</td>
+                            <td>Madras Cafe</td>
+                            <td>₹120</td>
+                            <td>15 min</td>
+                            <td>
+                                <label class="status-toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-copy"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Veg Noodles</td>
+                            <td><span class="item-category veg">Veg</span></td>
+                            <td>Dinner</td>
+                            <td>Dragon House</td>
+                            <td>₹180</td>
+                            <td>15 min</td>
+                            <td>
+                                <label class="status-toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-copy"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Copy Previous Week Section -->
+        <div style="background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h4><i class="fas fa-copy" style="color: #ff6b6b;"></i> Copy Menu from Previous Week</h4>
+                <p style="color: #666; margin-top: 0.3rem;">Quickly copy entire week's menu to save time</p>
+            </div>
+            <button class="add-btn" onclick="copyPreviousWeek()">
+                <i class="fas fa-copy"></i> Copy Previous Week
+            </button>
+        </div>
+    </main>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Menu Item</h2>
+                <button class="close-modal" onclick="closeAddItemModal()">&times;</button>
+            </div>
+            <form id="addItemForm" onsubmit="addMenuItem(event)">
+                <div class="form-group">
+                    <label>Item Name</label>
+                    <input type="text" placeholder="e.g., Paneer Butter Masala" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select>
+                        <option>Breakfast</option>
+                        <option>Lunch</option>
+                        <option>Dinner</option>
+                        <option>Special</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select>
+                        <option>Veg</option>
+                        <option>Non-Veg</option>
+                        <option>Egg</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Provider</label>
+                    <select>
+                        <option>Spice Kitchen</option>
+                        <option>Punjab Grill</option>
+                        <option>Madras Cafe</option>
+                        <option>Dragon House</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" placeholder="e.g., 250" required>
+                </div>
+                <div class="form-group">
+                    <label>Preparation Time (minutes)</label>
+                    <input type="number" placeholder="e.g., 20" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea rows="3" placeholder="Item description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Available in Shifts</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <label><input type="checkbox" checked> Day Shift</label>
+                        <label><input type="checkbox" checked> Night Shift</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Add Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Day Modal -->
+    <div id="editDayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Menu - <span id="editDayName">Monday</span></h2>
+                <button class="close-modal" onclick="closeEditDayModal()">&times;</button>
+            </div>
+            <form id="editDayForm" onsubmit="saveDayMenu(event)">
+                <div class="form-group">
+                    <label>Breakfast Items</label>
+                    <textarea rows="2" placeholder="Enter breakfast items...">Poha, Upma</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Lunch Items</label>
+                    <textarea rows="3" placeholder="Enter lunch items...">Chole Bhature, Rice, Salad, Pickle</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Dinner Items</label>
+                    <textarea rows="3" placeholder="Enter dinner items...">Roti, Dal Makhani, Rice</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Special Item</label>
+                    <input type="text" placeholder="e.g., Gulab Jamun">
+                </div>
+                <div class="form-group">
+                    <label>Estimated Tiffins</label>
+                    <input type="number" value="450">
+                </div>
+                <button type="submit" class="btn-primary">Save Menu</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 1rem;">Confirm Logout</h3>
+            <p style="margin-bottom: 2rem; color: #666;">Are you sure you want to logout?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeLogoutModal()" class="btn-secondary">Cancel</button>
+                <button onclick="confirmLogout()" class="btn-primary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Current shift (day/night)
+        let currentShift = 'day';
+
+        // Switch between day and night menu
+        function switchShift(shift) {
+            currentShift = shift;
+            const tabs = document.querySelectorAll('.shift-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.shift-tab').classList.add('active');
+            
+            // Here you would load the appropriate menu data
+            console.log('Switched to', shift, 'menu');
+        }
+
+        // Change week
+        function changeWeek(direction) {
+            alert(`Loading ${direction} week menu`);
+        }
+
+        // Edit day menu
+        function editDay(day) {
+            document.getElementById('editDayName').textContent = day;
+            document.getElementById('editDayModal').style.display = 'flex';
+        }
+
+        // Save day menu
+        function saveDayMenu(event) {
+            event.preventDefault();
+            alert('Menu saved successfully!');
+            closeEditDayModal();
+        }
+
+        // Switch provider
+        function switchProvider(provider) {
+            const tabs = document.querySelectorAll('.provider-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.provider-tab').classList.add('active');
+            console.log('Showing menu for:', provider);
+        }
+
+        // Copy previous week
+        function copyPreviousWeek() {
+            if(confirm('Copy menu from previous week? This will overwrite current menu.')) {
+                alert('Menu copied from previous week!');
+            }
+        }
+
+        // Open add item modal
+        function openAddItemModal() {
+            document.getElementById('addItemModal').style.display = 'flex';
+        }
+
+        function closeAddItemModal() {
+            document.getElementById('addItemModal').style.display = 'none';
+        }
+
+        // Add menu item
+        function addMenuItem(event) {
+            event.preventDefault();
+            alert('New item added to menu!');
+            closeAddItemModal();
+        }
+
+        // Close edit day modal
+        function closeEditDayModal() {
+            document.getElementById('editDayModal').style.display = 'none';
+        }
+
+        // Toggle filters
+        function toggleFilters() {
+            alert('Filter options coming soon!');
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        });
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addItemModal');
+            const editModal = document.getElementById('editDayModal');
+            const logoutModal = document.getElementById('logoutModal');
+            
+            if (event.target === addModal) addModal.style.display = 'none';
+            if (event.target === editModal) editModal.style.display = 'none';
+            if (event.target === logoutModal) logoutModal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
